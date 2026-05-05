@@ -1,0 +1,9 @@
+[package]
+name = "old_maid"
+version = "0.1.0"
+edition = "2024"
+description = "ババ抜き"
+
+[dependencies]
+console = "0.16.3"
+rand = "0.8.5"
