@@ -1,4 +1,4 @@
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Card {
     suit: String,
     rank: String,
@@ -9,16 +9,29 @@ impl Card {
         Self { suit, rank }
     }
 
-    pub fn get_suit(&self) -> String {
-        self.suit.clone()
+    pub fn get_suit(&self) -> &String {
+        &self.suit
     }
 
-    pub fn get_rank(&self) -> String {
-        self.rank.clone()
+    pub fn get_rank(&self) -> &String {
+        &self.rank
     }
 
-    pub fn get_card(&self) -> String {
-        format!("{}{}", self.get_suit(), self.get_rank())
+    pub fn get_name(&self) -> String {
+        let suit = match self.get_suit().as_str() {
+            "h" => "♥",
+            "d" => "♦",
+            "c" => "♣",
+            "s" => "♠",
+            "j" => "J",
+            &_ => todo!(),
+        };
+
+        if self.get_rank() == "0" {
+            suit.to_string()
+        } else {
+            format!("{}{}", suit, self.get_rank())
+        }
     }
 
     /// 手札表示用の並び: スート（h → d → c → s → j）、同スート内はランクの数値順。

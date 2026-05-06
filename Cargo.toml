@@ -6,4 +6,5 @@ description = "ババ抜き"
 
 [dependencies]
 console = "0.16.3"
+indicatif = "0.18.4"
 rand = "0.8.5"

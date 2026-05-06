@@ -20,7 +20,7 @@ impl Deck {
         cards.make_contiguous().shuffle(&mut rand::thread_rng());
 
         Self { cards: cards }
-    }  
+    }
 
     pub fn len(&self) -> usize {
         self.cards.len()

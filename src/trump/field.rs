@@ -1,24 +1,54 @@
+use console::Style;
 use super::card::Card;
+use crate::Player;
+
+struct Ranking(Vec<Player>);
+
+impl Ranking {
+    fn rank_icon(rank: usize) -> String {
+        let emoji = match rank {
+            0 => "🥇".to_string(),
+            1 => "🥈".to_string(),
+            2 => "🥉".to_string(),
+            _ => format!("rank {}", rank+1),
+        };
+        emoji.to_string()
+    }
+
+    fn display(&self) {
+        println!("======= {} =======", Style::new().yellow().apply_to("Ranking Result"));
+        for (i, player) in self.0.iter().enumerate() {
+            println!("{}. {} (Joker hold {} turn.)", Ranking::rank_icon(i), player.get_name(), player.joker_turn());
+        }
+        println!("==============================");
+    }
+
+    fn add(&mut self, player: Player) {
+        self.0.push(player);
+    }
+}
+
+//////////////////////////////////////////////////
 
 pub struct Field {
-    rank: Vec<String>,
+    rank: Ranking,
     discard: Vec<Card>,
 }
 
 impl Field {
     pub fn new() -> Self {
         Self {
-            rank: vec![],
+            rank: Ranking(vec![]),
             discard: vec![],
         }
     }
 
-    pub fn set_rank_player_name(&mut self, name: String) {
-        self.rank.push(name);
+    pub fn add_rank(&mut self, player: Player) {
+        self.rank.add(player);
     }
 
-    pub fn get_rank(&mut self) -> Vec<String> {
-        self.rank.clone()
+    pub fn display_rank(&self) {
+        self.rank.display();
     }
 
     /// 全プレイヤーが捨てたカードを集約（山札用 `discard`）。挿入順＝捨てた時系列のまま積まれる。
