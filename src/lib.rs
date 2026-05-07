@@ -1,3 +1,5 @@
+/// ババ抜き処理
+
 pub mod cli;
 pub mod utils;
 pub mod trump;
