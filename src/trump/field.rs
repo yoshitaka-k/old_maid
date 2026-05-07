@@ -1,3 +1,5 @@
+/// ゲームフィールド
+
 use console::Style;
 use super::card::Card;
 use crate::Player;
@@ -33,6 +35,7 @@ impl Ranking {
 pub struct Field {
     rank: Ranking,
     discard: Vec<Card>,
+    joker: String,
 }
 
 impl Field {
@@ -40,6 +43,7 @@ impl Field {
         Self {
             rank: Ranking(vec![]),
             discard: vec![],
+            joker: String::new(),
         }
     }
 
@@ -49,6 +53,14 @@ impl Field {
 
     pub fn display_rank(&self) {
         self.rank.display();
+    }
+
+    pub fn set_joker(&mut self, joker: String) {
+        self.joker = joker;
+    }
+
+    pub fn get_joker(&self) -> &String {
+        &self.joker
     }
 
     /// 全プレイヤーが捨てたカードを集約（山札用 `discard`）。挿入順＝捨てた時系列のまま積まれる。

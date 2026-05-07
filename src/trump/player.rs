@@ -1,9 +1,9 @@
-use indicatif::{ProgressBar, ProgressStyle};
+/// ゲーム参加プレイヤーの状態
+
 use std::time::Duration;
 use std::thread;
 
 use super::card::Card;
-use super::field::Field;
 
 #[derive(Clone)]
 struct CardSet(Vec<Card>);
@@ -104,7 +104,7 @@ impl Player {
             hand: CardSet(vec![]),
             discard: vec![],
             status: Status::new(),
-}
+        }
     }
 
     pub fn get_name(&self) -> &String {
@@ -159,8 +159,9 @@ impl Player {
     }
 
     /// 手札のうち **同じ数字（rank）** のペアを 1 組捨てる。
-    /// 実体は `field` 側の捨て置きに送り、`self.discard` にはログ用のコピーのみ積む。
-    pub fn try_discard_pair_same_rank(&mut self, field: &mut Field) -> bool {
+    /// 実体は `self.discard` に捨て置きに送り、`field` 側のはログ用のコピーのみ積む。
+    pub fn try_discard_pair_same_rank(&mut self) -> Vec<Card> {
+        let mut discards = Vec::new();
         let mut pair: Option<(usize, usize)> = None;
 
         'search: for i in 0..self.hand.len() {
@@ -173,37 +174,40 @@ impl Player {
         }
 
         let Some((i, j)) = pair else {
-            return false;
+            return discards;
         };
 
         // 後ろのインデックスから先に除く（ずれ防止）
         let second = self.hand.remove(j);
         let first = self.hand.remove(i);
 
-        self.discard.push(first.clone());
-        self.discard.push(second.clone());
-        field.record_discards([first, second]);
+        discards.push(first.clone());
+        discards.push(second.clone());
+
+        self.discard.push(first);
+        self.discard.push(second);
 
         // 早すぎるから1ペア100ms
         thread::sleep(Duration::from_millis(100));
 
-        true
+        discards
     }
 
     /// ペアが無くなるまで繰り返し捨てる。
-    pub fn discard_all_pairs_same_rank(&mut self, field: &mut Field) {
-        let pb = ProgressBar::new_spinner();
+    pub fn discard_all_pairs_same_rank(&mut self) -> Vec<Card> {
+        let mut total_discards = Vec::new();
 
-        pb.enable_steady_tick(Duration::from_millis(120));
-        pb.set_style(
-            ProgressStyle::with_template("{spinner:.green} {msg}")
-                .unwrap()
-                .tick_strings(&["|", "/", "-", "\\"])
-        );
-        pb.set_message(format!("{} Arrange my Hand (pair off).", self.name));
+        loop {
+            let mut pair = self.try_discard_pair_same_rank();
+            thread::sleep(Duration::from_millis(100));
 
-        while self.try_discard_pair_same_rank(field) {}
+            if pair.is_empty() {
+                break;
+            }
 
-        pb.finish_with_message(format!("{} Arrange my Hand end.", self.name));
+            total_discards.append(&mut pair);
+        }
+
+        total_discards
     }
 }

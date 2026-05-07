@@ -1,10 +1,11 @@
 [package]
 name = "old_maid"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 description = "ババ抜き"
 
 [dependencies]
+clap = { version = "4.6.1", features = ["derive"] }
 console = "0.16.3"
 indicatif = "0.18.4"
 rand = "0.8.5"
