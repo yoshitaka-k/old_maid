@@ -6,7 +6,7 @@ use crate::Player;
 
 //////////////////////////////////////////////////
 
-/// 強さ指定なし
+/// 強さ博奕打ち
 pub struct GamblerStrategy;
 impl CpuStrategy for GamblerStrategy {
     fn deck_shuffle(&self, cards: &mut Vec<Card>) {

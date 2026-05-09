@@ -6,7 +6,7 @@ use crate::Player;
 
 //////////////////////////////////////////////////
 
-/// 強さビギナー
+/// 強さ初心者
 pub struct BeginnerStrategy;
 impl CpuStrategy for BeginnerStrategy {
     fn deck_shuffle(&self, cards: &mut Vec<Card>) {

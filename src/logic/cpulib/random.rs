@@ -7,7 +7,7 @@ use crate::Player;
 
 //////////////////////////////////////////////////
 
-/// 強さ乱数
+/// 強さ乱数任せ
 pub struct RandomStrategy;
 impl CpuStrategy for RandomStrategy {
     fn deck_shuffle(&self, cards: &mut Vec<Card>) {

@@ -6,7 +6,7 @@ use crate::Player;
 
 //////////////////////////////////////////////////
 
-/// 強さ指定なし
+/// 強さ熟練者
 pub struct VeteranStrategy;
 impl CpuStrategy for VeteranStrategy {
     fn deck_shuffle(&self, cards: &mut Vec<Card>) {

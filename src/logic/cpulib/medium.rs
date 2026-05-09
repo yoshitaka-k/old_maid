@@ -6,7 +6,7 @@ use crate::Player;
 
 //////////////////////////////////////////////////
 
-/// 強さ指定なし
+/// 強さ中くらい
 pub struct MediumStrategy;
 impl CpuStrategy for MediumStrategy {
     fn deck_shuffle(&self, cards: &mut Vec<Card>) {
