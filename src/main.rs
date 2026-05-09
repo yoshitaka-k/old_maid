@@ -1,9 +1,11 @@
 use clap::Parser;
 
-use cli::console::{ system, info };
-use old_maid::*;
-
-use crate::utils::rand_range;
+use old_maid::cli::console::{info, system};
+use old_maid::game::{
+    cpu_member_input, deal_setup, init_current_player, organize_my_hand, players_setup, run,
+};
+use old_maid::utils::rand_range;
+use old_maid::{Field, GameMode};
 
 //////////////////////////////////////////////////
 
@@ -58,7 +60,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("------------------------------");
 
-    organize_my_hand(&mut players, &mut field);
+    organize_my_hand_setup(&mut players, &mut field);
 
     println!("------------------------------");
     for player in &mut players {
