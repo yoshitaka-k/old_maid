@@ -196,10 +196,10 @@ fn run_player(players: &mut Vec<Player>, current: usize, target_player_idx: usiz
 
 /// 順位決定
 fn add_rank_player(player: &mut Player, field: &mut Field) {
-    field.add_rank(player.clone());
-
     let rank = field.get_rank_len();
+
     player.set_rank(rank + 1);
+    field.add_rank(player.clone());
 }
 
 /// ゲーム実行処理
