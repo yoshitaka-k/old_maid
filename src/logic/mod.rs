@@ -9,4 +9,4 @@ pub use cpu::CpuLevel;
 pub use cpu::Cpu;
 
 /// CPUの強さ処理
-pub mod strategy;
+mod cpulib;

@@ -1,3 +1,7 @@
+use std::time::Duration;
+use std::thread;
+use indicatif::{ MultiProgress, ProgressBar, ProgressStyle };
+
 pub mod cli;
 pub mod utils;
 pub mod trump;
@@ -9,11 +13,6 @@ pub use logic::{ Human, Cpu, CpuLevelGroup, CpuLevel };
 
 use cli::console::*;
 use crate::utils::{ rand_range, dice_role };
-
-use indicatif::{ MultiProgress, ProgressBar, ProgressStyle };
-
-use std::time::Duration;
-use std::thread;
 
 //////////////////////////////////////////////////
 

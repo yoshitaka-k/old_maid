@@ -1,7 +1,11 @@
-use crate::logic::strategy::CpuStrategy;
-use crate::logic::strategy::*;
-
 use rand::prelude::SliceRandom;
+
+use crate::logic::cpulib::{
+    strategy::CpuStrategy,
+    default::NoneStrategy,
+    random::RandomStrategy,
+    beginner::BeginnerStrategy,
+};
 
 use crate::Card;
 use crate::Player;
