@@ -3,7 +3,7 @@ use crate::Player;
 
 //////////////////////////////////////////////////
 
-/// CPUの強さ処理
+/// CPUの強さ
 pub trait CpuStrategy {
     // 山札の切り方ロジック
     fn deck_shuffle(&self, deck: &mut Vec<Card>);

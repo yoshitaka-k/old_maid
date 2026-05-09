@@ -6,6 +6,7 @@ use crate::logic::CpuLevel;
 
 //////////////////////////////////////////////////
 
+/// プレイヤー、CPU判断
 #[derive(Clone)]
 pub enum PlayerType {
     Human,
@@ -14,11 +15,10 @@ pub enum PlayerType {
 
 //////////////////////////////////////////////////
 
-#[derive(Clone)]
 /// プレイヤー毎の手札構造体
+#[derive(Clone)]
 struct CardSet(Vec<Card>);
 
-/// プレイヤー毎の手札構造体
 impl CardSet {
     fn display(&self) {
         let mut msg: String = String::new();
@@ -71,6 +71,7 @@ impl CardSet {
 
 //////////////////////////////////////////////////
 
+/// 順位情報、ジョーカー保持ターン数
 #[derive(Clone)]
 struct Status {
     rank: usize,
@@ -104,6 +105,7 @@ impl Status {
 
 //////////////////////////////////////////////////
 
+/// プレイヤーに関する履歴情報
 #[derive(Clone)]
 struct History {
     discard: Vec<Card>,
@@ -131,6 +133,7 @@ impl History {
 
 //////////////////////////////////////////////////
 
+/// プレイヤー情報
 #[derive(Clone)]
 pub struct Player {
     name: String,

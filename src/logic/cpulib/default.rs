@@ -6,6 +6,7 @@ use crate::Player;
 
 //////////////////////////////////////////////////
 
+/// 強さ指定なし
 pub struct NoneStrategy;
 impl CpuStrategy for NoneStrategy {
     fn deck_shuffle(&self, cards: &mut Vec<Card>) {

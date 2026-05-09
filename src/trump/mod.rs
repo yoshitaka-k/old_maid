@@ -1,7 +1,12 @@
+/// ババ・ジジ抜きゲームモード指定名
 pub mod rule;
+/// トランプカード
 pub mod card;
+/// 山札
 pub mod deck;
+/// ゲームフィールド
 pub mod field;
+/// 参加プレイヤー
 pub mod player;
 
 pub use rule::GameMode;

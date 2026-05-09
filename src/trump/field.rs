@@ -1,9 +1,8 @@
-/// ゲームフィールド
-
 use console::Style;
 use crate::Card;
 use crate::Player;
 
+/// 順位情報
 struct Ranking(Vec<Player>);
 
 impl Ranking {
@@ -36,6 +35,7 @@ impl Ranking {
 
 //////////////////////////////////////////////////
 
+/// ゲームフィールド
 pub struct Field {
     rank: Ranking,
     discard: Vec<Card>,

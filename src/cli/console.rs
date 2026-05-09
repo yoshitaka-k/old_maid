@@ -12,21 +12,25 @@ use crate::Player;
 
 //////////////////////////////////////////////////
 
+/// 主にシステム向けな表示
 pub fn system(prompt: &str) {
     let style = Style::new().green();
     println!("{}", style.apply_to(prompt));
 }
 
+/// 主にシステム向けな表示（太字）
 pub fn system_bold(prompt: &str) {
     let style = Style::new().green().bold();
     println!("{}", style.apply_to(prompt));
 }
 
+/// 主にお知らせ向けな表示（太字）
 pub fn info(prompt: &str) {
     let style = Style::new().cyan();
     println!("{}", style.apply_to(prompt));
 }
 
+/// 主にエラー向けな表示
 pub fn error(prompt: &str) {
     let style = Style::new().red();
     println!("{}", style.apply_to(prompt));
@@ -34,6 +38,7 @@ pub fn error(prompt: &str) {
 
 //////////////////////////////////////////////////
 
+/// 人、CPUで色分け
 fn player_color(is_human: bool) -> Style {
     if is_human {
         Style::new().green()
@@ -42,22 +47,27 @@ fn player_color(is_human: bool) -> Style {
     }
 }
 
+/// ターン情報
 pub fn turn_info(turn: &usize, name: &str, is_human: bool) {
     println!("{}", player_color(is_human).apply_to(format!("Turn: {} / {}", turn, name)));
 }
 
+/// 上がりお知らせ
 pub fn clear_info(rank: &usize, name: &str) {
     println!("{}", Style::new().yellow().apply_to(&format!("{}. cleard {}.", rank, name)));
 }
 
+/// プレイヤー情報
 pub fn player_info(prompt: &str, is_human: bool) {
     println!("{}", player_color(is_human).apply_to(prompt));
 }
 
+/// プレイヤーが捨てたカード
 pub fn player_discard_pair_info(card_name: &String, is_human: bool) {
     player_info(&format!("Discard a pair {}.", card_name), is_human);
 }
 
+/// 手札情報
 pub fn player_hand_info(player: &Player) {
     let name = player.get_name();
     let hand_len = player.hand_len();
@@ -69,6 +79,7 @@ pub fn player_hand_info(player: &Player) {
 
 //////////////////////////////////////////////////
 
+/// 入力処理
 fn read_line(prompt: &str) -> rustyline::Result<String> {
     let mut rl = rustyline::DefaultEditor::new()?;
     let readline = rl.readline(&format!("{}", prompt));
@@ -87,6 +98,7 @@ fn read_line(prompt: &str) -> rustyline::Result<String> {
     }
 }
 
+/// 入力したのを数値に変換
 pub fn read_usize_line(prompt: &str, default: usize) -> rustyline::Result<usize> {
     let line = read_line(prompt)?;
 
@@ -100,6 +112,7 @@ pub fn read_usize_line(prompt: &str, default: usize) -> rustyline::Result<usize>
 
 //////////////////////////////////////////////////
 
+/// 待ち中表示（スピナー）
 pub fn execute_with_spinner<T, F>(set_message: &str, finish_message: &str, f: F) -> T
     where
         F: FnOnce() -> T {
@@ -127,6 +140,7 @@ pub fn execute_with_spinner<T, F>(set_message: &str, finish_message: &str, f: F)
     result
 }
 
+/// 待ち中表示（プログレスバー）
 pub fn execute_with_progress<T, F>(total: u64, set_message: &str, finish_message: &str, f: F) -> T
     where
         F: FnOnce(&ProgressBar) -> T {

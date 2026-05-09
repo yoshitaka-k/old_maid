@@ -9,6 +9,7 @@ use old_maid::{Field, GameMode};
 
 //////////////////////////////////////////////////
 
+/// コマンドライン引数
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Args {
@@ -19,6 +20,7 @@ struct Args {
 
 //////////////////////////////////////////////////
 
+/// メイン
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
     let mode = match args.mode.as_str() {

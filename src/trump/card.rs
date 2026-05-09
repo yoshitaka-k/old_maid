@@ -1,5 +1,4 @@
 /// カードの情報
-
 #[derive(Clone)]
 pub struct Card {
     suit: String,

@@ -13,10 +13,12 @@ use crate::PlayerType;
 
 //////////////////////////////////////////////////
 
+/// CPU強さグループ
 pub enum CpuLevelGroup {
     Beginner,
 }
 
+/// CPU強さ
 #[derive(Clone)]
 pub enum CpuLevel {
     None,
@@ -31,7 +33,6 @@ pub enum CpuLevel {
 
 /// CPU処理の管理
 pub struct Cpu();
-
 impl Cpu {
     pub fn new() -> Self {
         Self()
