@@ -19,6 +19,10 @@ impl CpuStrategy for RandomStrategy {
     }
 
     fn choose_card(&self, len: usize) -> usize {
+        if len == 0 {
+            return 0
+        }
+
         rand_range(0..len)
     }
 }

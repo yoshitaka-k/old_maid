@@ -2,7 +2,7 @@ use clap::Parser;
 
 use old_maid::cli::console::{info, system};
 use old_maid::game::{
-    cpu_member_input, deal_setup, init_current_player, organize_my_hand, players_setup, run,
+    cpu_member_input, deal_setup, init_current_player, organize_my_hand_setup, players_setup, run,
 };
 use old_maid::utils::rand_range;
 use old_maid::{Field, GameMode};
