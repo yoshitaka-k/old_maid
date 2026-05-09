@@ -79,9 +79,9 @@ impl Cpu {
         strategy.organize_hand(player);
     }
 
-    pub fn choose_card(&self, players: &Vec<Player>, current: &usize, target_player_idx: &usize) -> usize {
-        let player_type = players[*current].get_player_type();
-        let max_idx = players[*target_player_idx].hand_len();
+    pub fn choose_card(&self, players: &Vec<Player>, current: usize, target_player_idx: usize) -> usize {
+        let player_type = players[current].get_player_type();
+        let max_idx = players[target_player_idx].hand_len();
 
         if max_idx == 0 {
             return 0

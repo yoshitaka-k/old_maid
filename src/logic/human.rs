@@ -22,13 +22,13 @@ impl Human {
     }
 
     /// 相手の手札から左から何番目を選択する
-    pub fn input_choose_index(players: &Vec<Player>, target_player_idx: &usize) -> usize {
-        let max_idx = players[*target_player_idx].hand_len().saturating_sub(1);
+    pub fn input_choose_index(players: &Vec<Player>, target_player_idx: usize) -> usize {
+        let max_idx = players[target_player_idx].hand_len().saturating_sub(1);
 
         loop {
             match read_usize_line(&format!(
                         "Draw a card from {} (index from the left 0-{}, Default 0): ",
-                        players[*target_player_idx].get_name(),
+                        players[target_player_idx].get_name(),
                         max_idx
                     ), 0) {
                 Ok(num) if (0..=max_idx).contains(&num) => {

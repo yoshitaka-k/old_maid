@@ -13,7 +13,7 @@ const MAX_CPU_COUNT: usize = 7;
 const DEFAULT_CPU_COUNT: usize = 3;
 
 /// 起家指定
-pub fn init_current_player(temp_current: usize, players_count: &usize) -> usize {
+pub fn init_current_player(temp_current: usize, players_count: usize) -> usize {
     let dice = dice_role();
     (temp_current + (dice - 1)) % players_count
 }
@@ -89,9 +89,9 @@ fn deck_setup(mode: &GameMode, player: &Player, field: &mut Field) -> Deck {
 /// * `current` - 起家プレイヤー
 /// * `players` - 参加プレイヤー達
 /// * `field` - ゲームフィールド情報
-pub fn deal_setup(mode: &GameMode, current: &usize, players: &mut Vec<Player>, field: &mut Field) {
+pub fn deal_setup(mode: &GameMode, current: usize, players: &mut Vec<Player>, field: &mut Field) {
     // Deck Setting.
-    let mut deck = deck_setup(mode, &players[*current], field);
+    let mut deck = deck_setup(mode, &players[current], field);
     let deck_len = deck.len();
 
     // Deal the cards.
@@ -172,16 +172,16 @@ pub fn organize_my_hand_setup(players: &mut Vec<Player>, field: &mut Field) {
 }
 
 /// 対象からどの手札を引くか選択
-fn run_player(players: &mut Vec<Player>, current: &usize, target_player_idx: &usize) -> usize {
+fn run_player(players: &mut Vec<Player>, current: usize, target_player_idx: usize) -> usize {
     let pick_card_idx: usize;
 
-    if players[*current].has_human() {
+    if players[current].has_human() {
         pick_card_idx = Human::input_choose_index(players, target_player_idx);
     } else {
         let cpu = Cpu::new();
         pick_card_idx = cpu.choose_card(players, current, target_player_idx);
 
-        let msg = &format!("Draw a card from {}", players[*target_player_idx].get_name());
+        let msg = &format!("Draw a card from {}", players[target_player_idx].get_name());
         execute_with_spinner(msg, "", || {
             // 早すぎるから少し待機
             let ms = rand_range(200..300);
@@ -189,7 +189,7 @@ fn run_player(players: &mut Vec<Player>, current: &usize, target_player_idx: &us
         });
     }
 
-    players[*current].add_history_choose_index(pick_card_idx);
+    players[current].add_history_choose_index(pick_card_idx);
 
     pick_card_idx
 }
@@ -215,7 +215,7 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
         turn += 1;
         let mut target_player_idx = (current + players_count - 1) % players_count;
 
-        turn_info(&turn, players[current].get_name(), players[current].has_human());
+        turn_info(turn, players[current].get_name(), players[current].has_human());
 
         // Clear Player.
         if players[current].hand_len() == 0 {
@@ -252,7 +252,7 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
         }
 
         // Pick card selected.
-        let pick_card_idx = run_player(players, &current, &target_player_idx);
+        let pick_card_idx = run_player(players, current, target_player_idx);
 
         // Pick card.
         let pick_card = players[target_player_idx].remove_hand(pick_card_idx);

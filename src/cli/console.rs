@@ -48,12 +48,12 @@ fn player_color(is_human: bool) -> Style {
 }
 
 /// ターン情報
-pub fn turn_info(turn: &usize, name: &str, is_human: bool) {
+pub fn turn_info(turn: usize, name: &str, is_human: bool) {
     println!("{}", player_color(is_human).apply_to(format!("Turn: {} / {}", turn, name)));
 }
 
 /// 上がりお知らせ
-pub fn clear_info(rank: &usize, name: &str) {
+pub fn clear_info(rank: usize, name: &str) {
     println!("{}", Style::new().yellow().apply_to(&format!("{}. cleard {}.", rank, name)));
 }
 

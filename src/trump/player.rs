@@ -90,16 +90,16 @@ impl Status {
         self.rank = rank;
     }
 
-    fn get_rank(&self) -> &usize {
-        &self.rank
+    fn get_rank(&self) -> usize {
+        self.rank
     }
 
     fn update_joker_turn(&mut self) {
         self.joker_turn = self.joker_turn + 1;
     }
 
-    fn get_joker_turn(&self) -> &usize {
-        &self.joker_turn
+    fn get_joker_turn(&self) -> usize {
+        self.joker_turn
     }
 }
 
@@ -205,7 +205,7 @@ impl Player {
     }
 
     /// 上がり順の取得
-    pub fn get_rank(&self) -> &usize {
+    pub fn get_rank(&self) -> usize {
         self.status.get_rank()
     }
 
@@ -217,7 +217,7 @@ impl Player {
     }
 
     /// 保持ジョーカーターン数の取得
-    pub fn get_joker_turn(&self) -> &usize {
+    pub fn get_joker_turn(&self) -> usize {
         self.status.get_joker_turn()
     }
 

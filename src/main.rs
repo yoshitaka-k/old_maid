@@ -47,18 +47,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     system(&format!("Temp current player: {}", players[temp_current].get_name()));
 
     // Dice role Player.
-    let dice_current = init_current_player(temp_current, &players_count);
+    let dice_current = init_current_player(temp_current, players_count);
     system(&format!("Dice current player: {}", players[dice_current].get_name()));
 
     // Start current Player.
-    let current = init_current_player(dice_current, &players_count);
+    let current = init_current_player(dice_current, players_count);
     system(&format!("Start current player: {}", players[current].get_name()));
 
     println!("------------------------------");
 
     let mut field = Field::new();
 
-    deal_setup(&mode, &current, &mut players, &mut field);
+    deal_setup(&mode, current, &mut players, &mut field);
 
     println!("------------------------------");
 
