@@ -1,18 +1,18 @@
+pub mod cli;
+pub mod utils;
+pub mod trump;
+pub mod logic;
+
 use std::time::Duration;
 use std::thread;
 use indicatif::{ MultiProgress, ProgressBar, ProgressStyle };
 
-pub mod cli;
-pub mod utils;
-pub mod trump;
-pub use trump::{ GameMode, Field, Deck, Card, Player };
-use crate::trump::player::PlayerType;
-
-pub mod logic;
-pub use logic::{ Human, Cpu, CpuLevelGroup, CpuLevel };
-
+use utils::{ rand_range, dice_role };
 use cli::console::*;
-use crate::utils::{ rand_range, dice_role };
+
+pub use trump::{ GameMode, Field, Deck, Card, Player };
+use trump::player::{ PlayerType };
+use logic::{ Human, Cpu, CpuLevelGroup };
 
 //////////////////////////////////////////////////
 
