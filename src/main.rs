@@ -1,13 +1,13 @@
 use clap::Parser;
 
-use cli::console::{system, info};
+use cli::console::{ system, info };
 use old_maid::*;
 
-use crate::utils::rand;
+use crate::utils::rand_range;
 
 //////////////////////////////////////////////////
 
-#[derive(Parser, Debug)]
+#[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Args {
     /// Game mode: maid or man (Default: maid)
@@ -26,7 +26,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     println!("==============================");
-    println!("Game Mode: old {}.", args.mode);
+    system(&format!("Game Mode: old {}.", args.mode));
+    system("Key of Game Force quit. (Ctrl+C or Ctrl+D).");
     println!("==============================");
 
     let cpu_member = cpu_member_input();
@@ -38,7 +39,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("------------------------------");
 
     // Temp dice role Player.
-    let temp_current = rand(0..players_count);
+    let temp_current = rand_range(0..players_count);
     system(&format!("Temp current player: {}", players[temp_current].get_name()));
 
     // Dice role Player.
@@ -57,7 +58,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("------------------------------");
 
-    arrange_my_hand(&mut players, &mut field);
+    organize_my_hand(&mut players, &mut field);
 
     println!("------------------------------");
     for player in &mut players {

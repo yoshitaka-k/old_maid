@@ -1,13 +1,24 @@
-/// ゲーム参加プレイヤーの状態
-
 use std::time::Duration;
 use std::thread;
 
-use super::card::Card;
+use crate::Card;
+use crate::logic::CpuLevel;
+
+//////////////////////////////////////////////////
 
 #[derive(Clone)]
+pub enum PlayerType {
+    Human,
+    Cpu(CpuLevel),
+}
+
+//////////////////////////////////////////////////
+
+#[derive(Clone)]
+/// プレイヤー毎の手札構造体
 struct CardSet(Vec<Card>);
 
+/// プレイヤー毎の手札構造体
 impl CardSet {
     fn display(&self) {
         let mut msg: String = String::new();
@@ -30,6 +41,10 @@ impl CardSet {
         self.0.remove(index)
     }
 
+    fn get(&mut self) -> &mut Vec<Card> {
+        &mut self.0
+    }
+
     fn len(&self) -> usize {
         self.0.len()
     }
@@ -43,7 +58,7 @@ impl CardSet {
         &cardset[index]
     }
 
-    fn has_jokery(&mut self) -> bool {
+    fn has_joker(&mut self) -> bool {
         for card in &self.0 {
             if card.get_suit() == "j" {
                 return true
@@ -78,7 +93,7 @@ impl Status {
         &self.rank
     }
 
-    fn update_joker(&mut self) {
+    fn update_joker_turn(&mut self) {
         self.joker_turn = self.joker_turn + 1;
     }
 
@@ -90,72 +105,138 @@ impl Status {
 //////////////////////////////////////////////////
 
 #[derive(Clone)]
+struct History {
+    discard: Vec<Card>,
+    rank: Vec<usize>,
+    choose_index: Vec<usize>,
+}
+
+impl History {
+    pub fn new() -> Self{
+        Self {
+            discard: vec![],
+            rank: vec![],
+            choose_index: vec![],
+        }
+    }
+
+    fn add_rank(&mut self, rank: usize) {
+        self.rank.push(rank);
+    }
+
+    fn add_choose_index(&mut self, index: usize) {
+        self.choose_index.push(index);
+    }
+}
+
+//////////////////////////////////////////////////
+
+#[derive(Clone)]
 pub struct Player {
     name: String,
+    player_type: PlayerType,
     hand: CardSet,
-    discard: Vec<Card>,
     status: Status,
+    history: History,
 }
 
 impl Player {
     pub fn new(name: String) -> Self {
         Self {
             name,
+            player_type: PlayerType::Human,
             hand: CardSet(vec![]),
-            discard: vec![],
             status: Status::new(),
+            history: History::new(),
         }
     }
 
+    /// プレイヤー名取得
     pub fn get_name(&self) -> &String {
         &self.name
     }
 
+    /// 手札にカードを1枚追加
     pub fn add_hand(&mut self, card: Card) {
         self.hand.add(card);
     }
 
+    /// 手札のカードを1枚選択して取り出し削除
     pub fn remove_hand(&mut self, index: usize) -> Card {
         self.hand.remove(index)
     }
 
+    pub fn get_hand(&mut self) -> &mut Vec<Card> {
+        self.hand.get()
+    }
+
+    /// 手札のカードの枚数
     pub fn hand_len(&self) -> usize {
         self.hand.len()
     }
 
-    pub fn hand_is_empty(&mut self) -> bool {
-        self.hand.len() == 0
-    }
-
-    pub fn set_rank(&mut self, rank: usize) {
-        self.status.set_rank(rank);
-    }
-
-    pub fn get_rank(&self) -> &usize {
-        self.status.get_rank()
-    }
-
-    pub fn update_status_joker(&mut self) {
-        if self.hand.has_jokery() {
-            self.status.update_joker();
-        }
-    }
-
-    pub fn joker_turn(&self) -> &usize {
-        self.status.get_joker_turn()
-    }
-
+    /// 手札並び替え
     pub fn sort_hand(&mut self) {
         self.hand.sort()
     }
 
+    /// 手札整理（デフォルト）
     pub fn display_hand(&self) {
         self.hand.display();
     }
 
-    /// ログ用（そのプレイヤーが捨てたカードのコピー）。
+    /// 手札のカードがない？
+    pub fn hand_is_empty(&mut self) -> bool {
+        self.hand.len() == 0
+    }
+
+    /// 相手の手札の左から何番目取った履歴
+    pub fn add_history_choose_index(&mut self, index: usize) {
+        self.history.add_choose_index(index);
+    }
+
+    /// 上がり順の保持、上がり順履歴に保持
+    pub fn set_rank(&mut self, rank: usize) {
+        self.status.set_rank(rank);
+        self.history.add_rank(rank);
+    }
+
+    /// 上がり順の取得
+    pub fn get_rank(&self) -> &usize {
+        self.status.get_rank()
+    }
+
+    /// ジョーカーを持っている（持っていた）ターン数
+    pub fn update_status_joker_turn(&mut self) {
+        if self.hand.has_joker() {
+            self.status.update_joker_turn();
+        }
+    }
+
+    /// 保持ジョーカーターン数の取得
+    pub fn get_joker_turn(&self) -> &usize {
+        self.status.get_joker_turn()
+    }
+
+    /// プレイヤーが手動？
+    pub fn has_human(&self) -> bool {
+        match &self.player_type {
+            PlayerType::Human => true,
+            PlayerType::Cpu(_) => false,
+        }
+    }
+
+    pub fn set_player_type(&mut self, level: PlayerType) {
+        self.player_type = level;
+    }
+
+    pub fn get_player_type(&self) -> &PlayerType {
+        &self.player_type
+    }
+
+    /// ログ用（そのプレイヤーが捨てたカード）
     pub fn discard_log(&self) -> &[Card] {
-        &self.discard
+        &self.history.discard
     }
 
     /// 手札のうち **同じ数字（rank）** のペアを 1 組捨てる。
@@ -184,8 +265,8 @@ impl Player {
         discards.push(first.clone());
         discards.push(second.clone());
 
-        self.discard.push(first);
-        self.discard.push(second);
+        self.history.discard.push(first);
+        self.history.discard.push(second);
 
         // 早すぎるから1ペア100ms
         thread::sleep(Duration::from_millis(100));

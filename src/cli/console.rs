@@ -1,17 +1,24 @@
 /// ターミナルに表示させるもの
 
-use std::io::{self, Write};
-use console::Style;
-
-use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use std::time::Duration;
 
+use std::io::{ self };
+use indicatif::{ MultiProgress, ProgressBar, ProgressStyle };
+use rustyline::error::ReadlineError;
+// use rustyline::{ DefaultEditor, Result };
+
+use console::Style;
 use crate::Player;
 
 //////////////////////////////////////////////////
 
 pub fn system(prompt: &str) {
     let style = Style::new().green();
+    println!("{}", style.apply_to(prompt));
+}
+
+pub fn system_bold(prompt: &str) {
+    let style = Style::new().green().bold();
     println!("{}", style.apply_to(prompt));
 }
 
@@ -51,35 +58,43 @@ pub fn player_discard_pair_info(card_name: &String, is_human: bool) {
     player_info(&format!("Discard a pair {}.", card_name), is_human);
 }
 
-pub fn player_hand_info(player: &Player, is_human: bool) {
+pub fn player_hand_info(player: &Player) {
     let name = player.get_name();
     let hand_len = player.hand_len();
     println!("{}", &format!("{} Hand Count: {}", name, hand_len));
-    if is_human {
+    if player.has_human() {
         player.display_hand();
     }
 }
 
 //////////////////////////////////////////////////
 
-fn read_line(prompt: &str) -> io::Result<String> {
-    print!("{}", prompt);
-    io::stdout().flush()?;
+fn read_line(prompt: &str) -> rustyline::Result<String> {
+    let mut rl = rustyline::DefaultEditor::new()?;
+    let readline = rl.readline(&format!("{}", prompt));
 
-    let mut line = String::new();
-    io::stdin().read_line(&mut line)?;
-
-    Ok(line.trim().to_string())
+    match readline {
+        Ok(line) => Ok(line.trim().to_string()),
+        Err(ReadlineError::Interrupted) => {
+            system_bold("Pressing Ctrl+C. Ends the Game.");
+            std::process::exit(0);
+        },
+        Err(ReadlineError::Eof) => {
+            system_bold("Pressing Ctrl+D. Ends the Game.");
+            std::process::exit(0);
+        },
+        Err(e) => Err(e),
+    }
 }
 
-pub fn read_usize_line(prompt: &str, default: usize) -> io::Result<usize> {
+pub fn read_usize_line(prompt: &str, default: usize) -> rustyline::Result<usize> {
     let line = read_line(prompt)?;
 
     if line.is_empty() {
         Ok(default)
     } else {
-        line.parse::<usize>()
-            .map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))
+        Ok(line.parse::<usize>()
+            .map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?)
     }
 }
 

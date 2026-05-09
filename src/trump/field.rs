@@ -1,7 +1,7 @@
 /// ゲームフィールド
 
 use console::Style;
-use super::card::Card;
+use crate::Card;
 use crate::Player;
 
 struct Ranking(Vec<Player>);
@@ -20,13 +20,17 @@ impl Ranking {
     fn display(&self) {
         println!("======= {} =======", Style::new().yellow().apply_to("Ranking Result"));
         for (i, player) in self.0.iter().enumerate() {
-            println!("{}. {} (Joker hold {} turn.)", Ranking::rank_icon(i), player.get_name(), player.joker_turn());
+            println!("{}. {} (Joker hold {} turn.)", Ranking::rank_icon(i), player.get_name(), player.get_joker_turn());
         }
         println!("==============================");
     }
 
     fn add(&mut self, player: Player) {
         self.0.push(player);
+    }
+
+    fn len(&self) -> usize {
+        self.0.len()
     }
 }
 
@@ -35,7 +39,7 @@ impl Ranking {
 pub struct Field {
     rank: Ranking,
     discard: Vec<Card>,
-    joker: String,
+    mystery_card: Option<Card>,
 }
 
 impl Field {
@@ -43,7 +47,7 @@ impl Field {
         Self {
             rank: Ranking(vec![]),
             discard: vec![],
-            joker: String::new(),
+            mystery_card: None,
         }
     }
 
@@ -51,16 +55,27 @@ impl Field {
         self.rank.add(player);
     }
 
+    pub fn get_rank_len(&self) -> usize {
+        self.rank.len()
+    }
+
     pub fn display_rank(&self) {
         self.rank.display();
     }
 
-    pub fn set_joker(&mut self, joker: String) {
-        self.joker = joker;
+    pub fn set_mystery_card(&mut self, mystery_card: Option<Card>) {
+        self.mystery_card = mystery_card;
     }
 
-    pub fn get_joker(&self) -> &String {
-        &self.joker
+    pub fn get_mystery_card(&self) -> &Option<Card> {
+        &self.mystery_card
+    }
+
+    pub fn get_mystery_card_name(&self) -> String {
+        match &self.mystery_card {
+            Some(c) => c.get_name(),
+            None => "".to_string(),
+        }
     }
 
     /// 全プレイヤーが捨てたカードを集約（山札用 `discard`）。挿入順＝捨てた時系列のまま積まれる。

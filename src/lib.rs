@@ -1,14 +1,17 @@
-/// ババ抜き処理
-
 pub mod cli;
 pub mod utils;
 pub mod trump;
-pub use trump::{GameMode, Field, Deck, Card, Player};
+pub use trump::{ GameMode, Field, Deck, Card, Player };
+use crate::trump::player::PlayerType;
+
+pub mod logic;
+pub use logic::{ Human, Cpu, CpuLevelGroup, CpuLevel };
 
 use cli::console::*;
-use crate::utils::{rand, dice_role};
+use crate::utils::{ rand_range, dice_role };
 
-use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
+use indicatif::{ MultiProgress, ProgressBar, ProgressStyle };
+
 use std::time::Duration;
 use std::thread;
 
@@ -42,21 +45,56 @@ pub fn cpu_member_input() -> usize {
 
 pub fn players_setup(cpu_count: usize) -> Vec<Player> {
     // Player setup.
-
     let mut players = Vec::new();
     players.push(Player::new(String::from("Player")));
+
     for i in 1..=cpu_count {
-        players.push(Player::new(format!("CPU {}", i)));
+        let mut player = Player::new(format!("CPU {}", i));
+        player.set_player_type(PlayerType::Cpu(Cpu::new_level(CpuLevelGroup::Beginner)));
+
+        players.push(player);
     }
+
     players
 }
 
-pub fn deal_setup(mode: &GameMode,
-        current: &usize,
-        players: &mut Vec<Player>,
-        field: &mut Field) {
+fn _organize_hand(player: &mut Player) {
+    if player.has_human() {
+        Human::organize_hand(player);
+    } else {
+        let cpu = Cpu::new();
+        cpu.organize_hand(player);
+    }
+}
+
+/// 山札作り
+fn _deck_setup(mode: &GameMode, player: &Player, field: &mut Field) -> Deck {
+    // Deck Setting.
+    let mut deck = Deck::new(mode);
+
+    if deck.has_mystery_card() {
+        field.set_mystery_card(deck.pop_mystery_card());
+    }
+
     // Shuffle the cards.
-    let mut deck = Deck::new(mode, field);
+    if player.has_human() {
+        Human::deck_shuffle(deck.get_cards());
+    } else {
+        let cpu = Cpu::new();
+        cpu.deck_shuffle(player, deck.get_cards());
+    }
+
+    deck
+}
+
+/// 山札配り
+/// * `mode` - ババ抜き、ジジ抜き
+/// * `current` - 起家プレイヤー
+/// * `players` - 参加プレイヤー達
+/// * `field` - ゲームフィールド情報
+pub fn deal_setup(mode: &GameMode, current: &usize, players: &mut Vec<Player>, field: &mut Field) {
+    // Deck Setting.
+    let mut deck = _deck_setup(&mode, &players[*current], field);
     let deck_len = deck.len();
 
     // Deal the cards.
@@ -70,7 +108,7 @@ pub fn deal_setup(mode: &GameMode,
                 pb.inc(1);
 
                 // 早すぎるからms待ち
-                thread::sleep(Duration::from_millis(rand(50..=100)));
+                thread::sleep(Duration::from_millis(rand_range(50..=100)));
             } else {
                 break 'deck_deal;
             }
@@ -98,7 +136,7 @@ fn _set_progress_spinners(players: &mut Vec<Player>) -> Vec<ProgressBar> {
     spinners
 }
 
-pub fn arrange_my_hand(players: &mut Vec<Player>, field: &mut Field) {
+pub fn organize_my_hand(players: &mut Vec<Player>, field: &mut Field) {
     let mut all_discards = Vec::new();
 
     let spinners = _set_progress_spinners(players);
@@ -109,7 +147,9 @@ pub fn arrange_my_hand(players: &mut Vec<Player>, field: &mut Field) {
         for (player, pb) in players.iter_mut().zip(spinners) {
             let handle = s.spawn(move || {
                 let discards = player.discard_all_pairs_same_rank();
-                player.sort_hand();
+
+                // player hand sort.
+                _organize_hand(player);
 
                 pb.finish_with_message(format!("{} Arrange my Hand end.", player.get_name()));
 
@@ -133,45 +173,33 @@ pub fn arrange_my_hand(players: &mut Vec<Player>, field: &mut Field) {
 
 //////////////////////////////////////////////////
 
-fn _run_player(players: &Vec<Player>, current: &usize, target_player_idx: &usize) -> usize {
-    let max_idx = players[*target_player_idx].hand_len().saturating_sub(1);
+fn _run_player(players: &mut Vec<Player>, current: &usize, target_player_idx: &usize) -> usize {
     let pick_card_idx: usize;
 
-    if *current == 0 {
-        pick_card_idx = loop {
-            match read_usize_line(&format!(
-                        "Draw a card from {} (index from the left 0-{}, Default 0): ",
-                        players[*target_player_idx].get_name(),
-                        max_idx
-                    ), 0) {
-                Ok(num) if (0..=max_idx).contains(&num) => {
-                    break num;
-                },
-                Ok(_) => error(&format!("The input is not a number 0-{}.", max_idx)),
-                Err(_) => error("The input is not a number."),
-            }
-        };
+    if players[*current].has_human() {
+        pick_card_idx = Human::input_choose_index(players, target_player_idx);
     } else {
-        if max_idx > 0 {
-            pick_card_idx = rand(0..max_idx);
-        } else {
-            pick_card_idx = 0;
-        }
+        let cpu = Cpu::new();
+        pick_card_idx = cpu.choose_card(players, current, target_player_idx);
 
         let msg = &format!("Draw a card from {}", players[*target_player_idx].get_name());
         execute_with_spinner(msg, "", || {
-            // 早すぎるから確認用
-            let m = rand(200..300);
-            thread::sleep(Duration::from_millis(m));
+            // 早すぎるから少し待機
+            let ms = rand_range(200..300);
+            thread::sleep(Duration::from_millis(ms));
         });
     }
+
+    players[*current].add_history_choose_index(pick_card_idx);
 
     pick_card_idx
 }
 
-fn _add_rank_player(player: &mut Player, field: &mut Field, rank: usize) {
-    player.set_rank(rank);
+fn _add_rank_player(player: &mut Player, field: &mut Field) {
     field.add_rank(player.clone());
+
+    let rank = field.get_rank_len();
+    player.set_rank(rank + 1);
 }
 
 //////////////////////////////////////////////////
@@ -181,7 +209,6 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
 
     let mut turn = 0;
     let mut current = 0;
-    let mut rank = 0;
 
     println!("==============================");
 
@@ -189,14 +216,15 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
         turn += 1;
         let mut target_player_idx = (current + players_count - 1) % players_count;
 
-        turn_info(&turn, players[current].get_name(), current == 0);
+        turn_info(&turn, players[current].get_name(), players[current].has_human());
 
-        // Player Clear.
+        // Clear Player.
         if players[current].hand_len() == 0 {
             clear_info(players[current].get_rank(), players[current].get_name());
-            current = (current + 1) % players_count;
 
             println!("------------------------------");
+
+            current = (current + 1) % players_count;
             continue;
         }
 
@@ -205,8 +233,8 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
             target_player_idx = (target_player_idx + players_count - 1) % players_count;
 
             if current == target_player_idx {
-                rank = rank + 1;
-                _add_rank_player(&mut players[current], field, rank.clone());
+                // player clear.
+                _add_rank_player(&mut players[current], field);
 
                 println!("------------------------------");
                 system("Game end.");
@@ -214,7 +242,7 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
                 match mode {
                     GameMode::OldMaid => { },
                     GameMode::OldMan => {
-                        system(&format!("joker: {}.", field.get_joker()));
+                        system(&format!("Mystery card: {}.", field.get_mystery_card_name()));
                     }
                 }
 
@@ -225,19 +253,18 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
         }
 
         // Pick card selected.
-        let pick_card_idx = _run_player(&players, &current, &target_player_idx);
+        let pick_card_idx = _run_player(players, &current, &target_player_idx);
 
         // Pick card.
         let pick_card = players[target_player_idx].remove_hand(pick_card_idx);
-        if current == 0 {
-            player_info(&format!("pick card: {}", pick_card.get_name()), current == 0);
+        if players[current].has_human() {
+            player_info(&format!("pick card: {}", pick_card.get_name()), players[current].has_human());
         }
         players[current].add_hand(pick_card.clone());
 
-        // 引かれて手札無くなったら
+        // player clear.
         if players[target_player_idx].hand_len() == 0 {
-            rank = rank + 1;
-            _add_rank_player(&mut players[target_player_idx], field, rank.clone());
+            _add_rank_player(&mut players[target_player_idx], field);
         }
 
         // Pair?
@@ -245,17 +272,17 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
         if pair.len() > 0 {
             field.record_discards(pair);
 
-            player_discard_pair_info(&pick_card.get_name(), current == 0);
+            player_discard_pair_info(&pick_card.get_name(), players[current].has_human());
 
+            // player clear.
             if players[current].hand_len() == 0 {
-                rank = rank + 1;
-                _add_rank_player(&mut players[current], field, rank.clone());
+                _add_rank_player(&mut players[current], field);
             }
         }
 
-        players[current].update_status_joker();
+        players[current].update_status_joker_turn();
 
-        player_hand_info(&mut players[current], current == 0);
+        player_hand_info(&mut players[current]);
 
         current = (current + 1) % players_count;
 
