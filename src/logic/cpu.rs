@@ -5,6 +5,9 @@ use crate::logic::cpulib::{
     default::NoneStrategy,
     random::RandomStrategy,
     beginner::BeginnerStrategy,
+    medium::MediumStrategy,
+    gambler::GamblerStrategy,
+    veteran::VeteranStrategy,
 };
 
 use crate::Card;
@@ -60,7 +63,9 @@ impl Cpu {
                     CpuLevel::None => Box::new(NoneStrategy),
                     CpuLevel::Random => Box::new(RandomStrategy),
                     CpuLevel::Beginner => Box::new(BeginnerStrategy),
-                    _ => Box::new(RandomStrategy),
+                    CpuLevel::Medium => Box::new(MediumStrategy),
+                    CpuLevel::Gambler => Box::new(GamblerStrategy),
+                    CpuLevel::Veteran => Box::new(VeteranStrategy),
                 }
             }
         }

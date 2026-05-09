@@ -215,7 +215,8 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
         turn += 1;
         let mut target_player_idx = (current + players_count - 1) % players_count;
 
-        turn_info(turn, players[current].get_name(), players[current].has_human());
+        let name = format!("{} ({})", players[current].get_name(), players[current].player_type_name());
+        turn_info(turn, &name, players[current].has_human());
 
         // Clear Player.
         if players[current].hand_len() == 0 {

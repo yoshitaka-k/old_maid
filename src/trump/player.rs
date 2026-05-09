@@ -18,7 +18,6 @@ pub enum PlayerType {
 /// プレイヤー毎の手札構造体
 #[derive(Clone)]
 struct CardSet(Vec<Card>);
-
 impl CardSet {
     fn display(&self) {
         let mut msg: String = String::new();
@@ -235,6 +234,22 @@ impl Player {
 
     pub fn get_player_type(&self) -> &PlayerType {
         &self.player_type
+    }
+
+    pub fn player_type_name(&self) -> String {
+        let type_name = match self.get_player_type() {
+            PlayerType::Human => "Human",
+            PlayerType::Cpu(lv) => match lv {
+                CpuLevel::None => "None",
+                CpuLevel::Random => "Random",
+                CpuLevel::Beginner => "Beginner",
+                CpuLevel::Medium => "Medium",
+                CpuLevel::Gambler => "Gambler",
+                CpuLevel::Veteran => "Veteran",
+            },
+        };
+
+        type_name.to_string()
     }
 
     /// ログ用（そのプレイヤーが捨てたカード）
