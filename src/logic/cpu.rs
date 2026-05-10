@@ -88,12 +88,14 @@ impl Cpu {
         }
     }
 
+    /// 山札の切り方
     pub fn deck_shuffle(&self, player: &Player, cards: &mut Vec<Card>) {
         let player_type = player.get_player_type();
         let strategy = self._get_strategy(player_type);
         strategy.deck_shuffle(cards);
     }
 
+    /// 手札を並び替え
     pub fn organize_hand(&self, player: &mut Player) {
         let player_type = player.get_player_type();
 
@@ -101,6 +103,7 @@ impl Cpu {
         strategy.organize_hand(player);
     }
 
+    /// 相手のカードを引く場所
     pub fn choose_card(&self, players: &Vec<Player>, current: usize, target_player_idx: usize) -> usize {
         let player_type = players[current].get_player_type();
         let max_idx = players[target_player_idx].hand_len();

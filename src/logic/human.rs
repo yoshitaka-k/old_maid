@@ -19,7 +19,7 @@ use crate::Player;
 /// 人処理の管理
 pub struct Human();
 impl Human {
-    /// 人だった場合の山札切る処理
+    /// 山札切る処理
     pub fn deck_shuffle(cards: &mut Vec<Card>) {
         hindu_shuffle(cards, &HinduParams::default());
         riffle_shuffle(cards, &RiffleParams::default());

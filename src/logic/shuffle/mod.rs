@@ -1,7 +1,7 @@
-mod hindu;
-mod riffle;
-mod deal;
-mod double_cut;
+pub(super) mod double_cut;
+pub(super) mod hindu;
+pub(super) mod riffle;
+pub(super) mod deal;
 
 pub use double_cut::double_cut;
 pub use hindu::{hindu_shuffle, HinduParams};

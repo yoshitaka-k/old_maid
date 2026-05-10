@@ -14,7 +14,7 @@ pub struct NoneStrategy;
 impl CpuStrategy for NoneStrategy {
     /// 山札の切り方
     fn deck_shuffle(&self, cards: &mut Vec<Card>) {
-        deal_shuffle(cards, &DealParams::beginner());
+        deal_shuffle(cards, &DealParams::default());
         double_cut(cards);
     }
 
