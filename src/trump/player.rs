@@ -58,14 +58,8 @@ impl CardSet {
         &cardset[index]
     }
 
-    fn has_joker(&mut self) -> bool {
-        for card in &self.0 {
-            if card.get_suit() == "j" {
-                return true
-            }
-        }
-
-        false
+    fn has_joker(&self) -> bool {
+        self.0.iter().any(Card::is_joker)
     }
 }
 

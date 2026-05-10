@@ -18,6 +18,10 @@ impl Card {
         &self.rank
     }
 
+    pub fn is_joker(&self) -> bool {
+        self.suit == "j"
+    }
+
     pub fn get_name(&self) -> String {
         let suit = match self.get_suit().as_str() {
             "h" => "♥",
@@ -28,7 +32,7 @@ impl Card {
             &_ => todo!(),
         };
 
-        if self.get_rank() == "0" {
+        if self.is_joker() {
             suit.to_string()
         } else {
             format!("{}{}", suit, self.get_rank())
