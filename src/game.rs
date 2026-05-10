@@ -56,16 +56,6 @@ pub fn players_setup(cpu_count: usize) -> Vec<Player> {
     players
 }
 
-/// 手札並び替え
-fn organize_hand(player: &mut Player) {
-    if player.has_human() {
-        Human::organize_hand(player);
-    } else {
-        let cpu = Cpu::new();
-        cpu.organize_hand(player);
-    }
-}
-
 /// 山札作り
 fn deck_setup(mode: &GameMode, player: &Player, field: &mut Field) -> Deck {
     // Deck Setting.
@@ -119,6 +109,16 @@ pub fn deal_setup(mode: &GameMode, current: usize, players: &mut Vec<Player>, fi
             }
         }
     });
+}
+
+/// 手札並び替え
+fn organize_hand(player: &mut Player) {
+    if player.has_human() {
+        Human::organize_hand(player);
+    } else {
+        let cpu = Cpu::new();
+        cpu.organize_hand(player);
+    }
 }
 
 /// 配り後の手札整理
@@ -262,6 +262,7 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
 
         // Pick card selected.
         let pick_card_idx = run_player(players, current, target_player_idx);
+        players[target_player_idx].add_history_taken_index(pick_card_idx);
 
         // Pick card.
         let pick_card = players[target_player_idx].remove_hand(pick_card_idx);
@@ -290,6 +291,9 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
                 add_rank_player(&mut players[current], field);
             }
         }
+
+        // player hand sort.
+        organize_hand(&mut players[current]);
 
         players[current].update_status_joker_turn();
 

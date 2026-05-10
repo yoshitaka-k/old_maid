@@ -1,5 +1,6 @@
-use std::time::Duration;
 use std::thread;
+use std::time::Duration;
+use std::collections::HashMap;
 
 use crate::Card;
 use crate::logic::CpuLevel;
@@ -110,6 +111,7 @@ struct History {
     discard: Vec<Card>,
     rank: Vec<usize>,
     choose_index: Vec<usize>,
+    taken_index: Vec<usize>,
 }
 
 impl History {
@@ -118,6 +120,7 @@ impl History {
             discard: vec![],
             rank: vec![],
             choose_index: vec![],
+            taken_index: vec![],
         }
     }
 
@@ -127,6 +130,26 @@ impl History {
 
     fn add_choose_index(&mut self, index: usize) {
         self.choose_index.push(index);
+    }
+
+    fn add_taken_index(&mut self, index: usize) {
+        self.taken_index.push(index);
+    }
+
+    fn get_taken_index(&self) -> &Vec<usize> {
+        &self.taken_index
+    }
+
+    /// 引かれた数値が多い順に出力
+    fn values_by_descending_frequency(&self) -> Vec<usize> {
+        let mut counts: HashMap<usize, usize> = HashMap::new();
+        for &idx in &self.taken_index {
+            *counts.entry(idx).or_insert(0) += 1;
+        }
+        let mut pairs: Vec<(usize, usize)> = counts.into_iter().collect();
+        pairs.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));
+
+        pairs.into_iter().map(|(k, _)| k).collect()
     }
 }
 
@@ -195,6 +218,16 @@ impl Player {
     /// 相手の手札の左から何番目取った履歴
     pub fn add_history_choose_index(&mut self, index: usize) {
         self.history.add_choose_index(index);
+    }
+
+    /// 相手に手札の左から何番目取られた履歴
+    pub fn add_history_taken_index(&mut self, index: usize) {
+        self.history.add_taken_index(index);
+    }
+
+    /// 履歴に保存している引かれた場所リストを返す
+    pub fn get_history_taken(&self) -> &Vec<usize> {
+        self.history.get_taken_index()
     }
 
     /// 上がり順の保持、上がり順履歴に保持
