@@ -184,7 +184,7 @@ fn run_player(players: &mut Vec<Player>, current: usize, target_player_idx: usiz
     let pick_card_idx: usize;
 
     if players[current].has_human() {
-        pick_card_idx = Human::input_choose_index(players, target_player_idx);
+        pick_card_idx = Human::choose_card(players, target_player_idx);
     } else {
         let cpu = Cpu::new();
         pick_card_idx = cpu.choose_card(players, current, target_player_idx);

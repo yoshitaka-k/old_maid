@@ -1,10 +1,18 @@
 use rand::prelude::SliceRandom;
+use crate::cli::console::{read_usize_line, error};
+
+use crate::logic::shuffle::{
+    double_cut,
+    hindu_shuffle,
+    riffle_shuffle,
+    deal_shuffle,
+    HinduParams,
+    RiffleParams,
+    DealParams,
+};
 
 use crate::Card;
 use crate::Player;
-
-use crate::read_usize_line;
-use crate::error;
 
 //////////////////////////////////////////////////
 
@@ -12,17 +20,21 @@ use crate::error;
 pub struct Human();
 impl Human {
     /// 人だった場合の山札切る処理
-    pub fn deck_shuffle(deck: &mut Vec<Card>) {
-        deck.shuffle(&mut rand::thread_rng());
+    pub fn deck_shuffle(cards: &mut Vec<Card>) {
+        hindu_shuffle(cards, &HinduParams::default());
+        riffle_shuffle(cards, &RiffleParams::default());
+        deal_shuffle(cards, &DealParams::default());
+        double_cut(cards);
     }
 
     /// 手札の並び替え
     pub fn organize_hand(player: &mut Player) {
-        player.sort_hand();
+        let hand = player.get_hand();
+        hand.shuffle(&mut rand::thread_rng());
     }
 
     /// 相手の手札から左から何番目を選択する
-    pub fn input_choose_index(players: &Vec<Player>, target_player_idx: usize) -> usize {
+    pub fn choose_card(players: &Vec<Player>, target_player_idx: usize) -> usize {
         let max_idx = players[target_player_idx].hand_len().saturating_sub(1);
 
         loop {
