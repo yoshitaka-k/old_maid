@@ -1,7 +1,7 @@
 /// CPU強さ毎の判定
 pub(super) mod strategy;
 /// 山札の切り方方式
-pub(crate) mod shuffle;
+pub(super) mod shuffle;
 /// 強さ指定なし
 pub(super) mod default;
 /// 強さ乱数任せ
