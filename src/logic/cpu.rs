@@ -43,34 +43,30 @@ impl Cpu {
         Self()
     }
 
-    pub fn new_level(level_group: CpuLevelGroup) -> CpuLevel {
-        let choices = match level_group {
-            CpuLevelGroup::None =>[
-                CpuLevel::None,
-                CpuLevel::None,
-                CpuLevel::None,
-                CpuLevel::None,
-                CpuLevel::None,
-                CpuLevel::None,
+    /// CPUの強さグループ
+    /// 6分の1でCPUの強さを決める
+    fn level_choices(level_group: CpuLevelGroup) -> [CpuLevel; 6] {
+        match level_group {
+            CpuLevelGroup::None => [
+                CpuLevel::None, CpuLevel::None, CpuLevel::None,
+                CpuLevel::None, CpuLevel::None, CpuLevel::None,
             ],
-            CpuLevelGroup::Beginner =>[
-                CpuLevel::Beginner,
-                CpuLevel::Beginner,
-                CpuLevel::Beginner,
-                CpuLevel::Medium,
-                CpuLevel::Medium,
+            CpuLevelGroup::Beginner => [
+                CpuLevel::Beginner, CpuLevel::Beginner, CpuLevel::Beginner,
+                CpuLevel::Medium,   CpuLevel::Medium,
                 CpuLevel::Random,
             ],
-            CpuLevelGroup::Gambler =>[
-                CpuLevel::Random,
-                CpuLevel::Random,
-                CpuLevel::Random,
-                CpuLevel::Gambler,
-                CpuLevel::Gambler,
-                CpuLevel::Gambler,
+            CpuLevelGroup::Gambler => [
+                CpuLevel::Random,  CpuLevel::Random,  CpuLevel::Random,
+                CpuLevel::Gambler, CpuLevel::Gambler, CpuLevel::Gambler,
             ],
-        };
+        }
+    }
 
+    /// CPUの強さ設定
+    /// 強さグループから6分の1でCPUの強さを決める
+    pub fn new_level(level_group: CpuLevelGroup) -> CpuLevel {
+        let choices = Self::level_choices(level_group);
         choices.choose(&mut rand::thread_rng()).unwrap().clone()
     }
 
