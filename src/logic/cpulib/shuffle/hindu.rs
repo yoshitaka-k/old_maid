@@ -15,10 +15,38 @@ pub struct HinduParams {
 }
 
 impl HinduParams {
+    #[allow(dead_code)]
     pub fn beginner() -> Self {
+        Self {
+            iterations: 5,
+            min_chunk: 10,
+            max_chunk: 20,
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn medium() -> Self {
         Self {
             iterations: 10,
             min_chunk: 10,
+            max_chunk: 15,
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn veteran() -> Self {
+        Self {
+            iterations: 15,
+            min_chunk: 5,
+            max_chunk: 10,
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn gambler() -> Self {
+        Self {
+            iterations: 10,
+            min_chunk: 5,
             max_chunk: 20,
         }
     }
@@ -43,6 +71,9 @@ pub fn hindu_shuffle(cards: &mut Vec<Card>, params: &HinduParams) {
 
     for _ in 0..iterations {
         hindu_shuffle_once(cards, min_chunk, max_chunk);
+
+        // 早すぎるから100ms待ち
+        thread::sleep(Duration::from_millis(100));
     }
 }
 
@@ -86,10 +117,10 @@ fn hindu_shuffle_once(cards: &mut Vec<Card>, min_chunk: usize, max_chunk: usize)
         let start = left.len() - take_n;
 
         mixed.extend(left.drain(start..));
+
+        // 早すぎるから20ms待ち
+        thread::sleep(Duration::from_millis(20));
     }
 
     *cards = mixed;
-
-    // 早すぎるから100ms待ち
-    thread::sleep(Duration::from_millis(100));
 }

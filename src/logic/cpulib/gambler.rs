@@ -1,6 +1,13 @@
 use rand::prelude::SliceRandom;
 
 use crate::logic::cpulib::strategy::CpuStrategy;
+use crate::logic::cpulib::shuffle::{
+    double_cut,
+    hindu_shuffle,
+    riffle_shuffle,
+    HinduParams,
+    RiffleParams,
+};
 use crate::rand_range;
 use crate::Card;
 use crate::Player;
@@ -12,7 +19,9 @@ pub struct GamblerStrategy;
 impl CpuStrategy for GamblerStrategy {
     /// 山札の切り方
     fn deck_shuffle(&self, cards: &mut Vec<Card>) {
-        cards.shuffle(&mut rand::thread_rng());
+        hindu_shuffle(cards, &HinduParams::gambler());
+        riffle_shuffle(cards, &RiffleParams::gambler());
+        double_cut(cards);
     }
 
     /// 手札を並び替え

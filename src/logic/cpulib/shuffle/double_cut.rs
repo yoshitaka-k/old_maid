@@ -1,4 +1,7 @@
+use std::thread;
+use std::time::Duration;
 use rand::Rng;
+
 use crate::Card;
 
 /// 山をだいたい三等分したうえで束の順番だけ入れ替える
@@ -30,4 +33,7 @@ pub fn double_cut(cards: &mut Vec<Card>) {
     mixed.extend(pile_l);
 
     *cards = mixed;
+
+    // 早すぎるから20ms待ち
+    thread::sleep(Duration::from_millis(20));
 }

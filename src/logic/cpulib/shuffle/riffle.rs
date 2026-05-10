@@ -14,6 +14,7 @@ pub struct RiffleParams {
 }
 
 impl RiffleParams {
+    #[allow(dead_code)]
     pub fn beginner() -> Self {
         Self {
             iterations: 2,
@@ -21,6 +22,7 @@ impl RiffleParams {
         }
     }
 
+    #[allow(dead_code)]
     pub fn medium() -> Self {
         Self {
             iterations: 4,
@@ -28,7 +30,16 @@ impl RiffleParams {
         }
     }
 
+    #[allow(dead_code)]
     pub fn veteran() -> Self {
+        Self {
+            iterations: 8,
+            max_chunk: 2,
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn gambler() -> Self {
         Self {
             iterations: 8,
             max_chunk: 2,
@@ -53,6 +64,9 @@ pub fn riffle_shuffle(cards: &mut Vec<Card>, params: &RiffleParams) {
 
     for _ in 0..iterations {
         riffle_shuffle_once(cards, max_chunk);
+
+        // 早すぎるから100ms待ち
+        thread::sleep(Duration::from_millis(100));
     }
 }
 
@@ -90,10 +104,10 @@ fn riffle_shuffle_once(cards: &mut Vec<Card>, max_chunk: usize) {
         let take_n = rng.gen_range(1..=chunk_cap);
         let start = pile.len() - take_n;
         mixed.extend(pile.drain(start..));
+
+        // 早すぎるから20ms待ち
+        thread::sleep(Duration::from_millis(20));
     }
 
     *cards = mixed;
-
-    // 早すぎるから100ms待ち
-    thread::sleep(Duration::from_millis(100));
 }

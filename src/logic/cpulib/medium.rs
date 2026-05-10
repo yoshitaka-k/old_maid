@@ -1,8 +1,9 @@
 use crate::logic::cpulib::strategy::CpuStrategy;
 use crate::logic::cpulib::shuffle::{
     riffle_shuffle,
-    double_cut,
+    hindu_shuffle,
     RiffleParams,
+    HinduParams,
 };
 use crate::Card;
 use crate::Player;
@@ -14,8 +15,8 @@ pub struct MediumStrategy;
 impl CpuStrategy for MediumStrategy {
     /// 山札の切り方
     fn deck_shuffle(&self, cards: &mut Vec<Card>) {
+        hindu_shuffle(cards, &HinduParams::medium());
         riffle_shuffle(cards, &RiffleParams::medium());
-        double_cut(cards);
     }
 
     /// 手札を並び替え

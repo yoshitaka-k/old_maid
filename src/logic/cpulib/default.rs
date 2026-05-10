@@ -1,8 +1,8 @@
 use crate::logic::cpulib::strategy::CpuStrategy;
 use crate::logic::cpulib::shuffle::{
-    hindu_shuffle,
+    deal_shuffle,
     double_cut,
-    HinduParams,
+    DealParams,
 };
 use crate::Card;
 use crate::Player;
@@ -14,7 +14,7 @@ pub struct NoneStrategy;
 impl CpuStrategy for NoneStrategy {
     /// 山札の切り方
     fn deck_shuffle(&self, cards: &mut Vec<Card>) {
-        hindu_shuffle(cards, &HinduParams::beginner());
+        deal_shuffle(cards, &DealParams::beginner());
         double_cut(cards);
     }
 
