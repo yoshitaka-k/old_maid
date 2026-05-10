@@ -1,6 +1,6 @@
 [package]
 name = "old_maid"
-version = "0.4.4"
+version = "0.7.0"
 edition = "2024"
 description = "ババ抜き"
 
