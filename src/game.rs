@@ -71,17 +71,23 @@ fn deck_setup(mode: &GameMode, player: &Player, field: &mut Field) -> Deck {
     // Deck Setting.
     let mut deck = Deck::new(mode);
 
-    if deck.has_mystery_card() {
-        field.set_mystery_card(deck.pop_mystery_card());
-    }
+    // Deck Shuffle.
+    execute_with_spinner(
+            &format!("Deck setup and {} a shuffle.", player.get_name()),
+            &format!("Deck setup and {} a shuffle end.", player.get_name()),
+        || {
+        if deck.has_mystery_card() {
+            field.set_mystery_card(deck.pop_mystery_card());
+        }
 
-    // Shuffle the cards.
-    if player.has_human() {
-        Human::deck_shuffle(deck.get_cards());
-    } else {
-        let cpu = Cpu::new();
-        cpu.deck_shuffle(player, deck.get_cards());
-    }
+        // Shuffle the cards.
+        if player.has_human() {
+            Human::deck_shuffle(deck.get_cards());
+        } else {
+            let cpu = Cpu::new();
+            cpu.deck_shuffle(player, deck.get_cards());
+        }
+    });
 
     deck
 }

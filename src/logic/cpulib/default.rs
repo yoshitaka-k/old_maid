@@ -1,9 +1,7 @@
-use rand::prelude::SliceRandom;
-
 use crate::logic::cpulib::{
-    riffle_shuffle,
+    hindu_shuffle,
     double_cut,
-    RiffleParams,
+    HinduParams,
     strategy::CpuStrategy,
 };
 use crate::Card;
@@ -15,7 +13,7 @@ use crate::Player;
 pub struct NoneStrategy;
 impl CpuStrategy for NoneStrategy {
     fn deck_shuffle(&self, cards: &mut Vec<Card>) {
-        riffle_shuffle(cards, &RiffleParams::beginner());
+        hindu_shuffle(cards, &HinduParams::beginner());
         double_cut(cards);
     }
 
