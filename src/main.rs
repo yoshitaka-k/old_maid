@@ -2,11 +2,11 @@ use clap::Parser;
 use console::Style;
 use figlet_rs::FIGlet;
 
-use old_maid::cli::console::{info, system};
+use old_maid::cli::console::{info, system, system_bold};
 use old_maid::game::{
     cpu_member_input, deal_setup, init_current_player, organize_my_hand_setup, players_setup, run,
 };
-use old_maid::utils::rand_range;
+use old_maid::utils::{capitalize, rand_range};
 use old_maid::{Field, GameMode};
 
 //////////////////////////////////////////////////
@@ -33,12 +33,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Title
     let style = Style::new().cyan().bold();
     let standard_font = FIGlet::standard().unwrap();
-    print!("{}", style.apply_to(standard_font.convert(&format!("Old {}", args.mode)).unwrap()));
+    print!("{}", style.apply_to(standard_font.convert(&format!("Old {}", capitalize(&args.mode))).unwrap()));
     println!("------------------------------");
     println!("  Version: {}  |  License: {}", env!("CARGO_PKG_VERSION"), env!("CARGO_PKG_LICENSE"));
-    println!("  Starting Old {} Game Engine... 🚀", args.mode);
+    println!("  Starting Old {} Game Engine... 🚀", capitalize(&args.mode));
     println!("------------------------------");
-    system("  Key of Game Force quit. (Ctrl+C or Ctrl+D).");
+    system_bold("  Key of Game Force quit. (Ctrl+C or Ctrl+D).");
     println!("==============================");
 
     let cpu_member = cpu_member_input();
