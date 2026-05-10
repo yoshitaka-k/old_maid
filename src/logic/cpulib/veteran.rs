@@ -1,8 +1,8 @@
-use crate::logic::cpulib::{
+use crate::logic::cpulib::strategy::CpuStrategy;
+use crate::logic::cpulib::shuffle::{
     riffle_shuffle,
     double_cut,
     RiffleParams,
-    strategy::CpuStrategy,
 };
 use crate::Card;
 use crate::Player;
