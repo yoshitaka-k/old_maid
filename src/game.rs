@@ -15,6 +15,8 @@ const DEFAULT_CPU_COUNT: usize = 3;
 /// 起家指定
 pub fn init_current_player(temp_current: usize, players_count: usize) -> usize {
     let dice = dice_role();
+    info(&format!("Dice Result: {}", dice));
+
     (temp_current + (dice - 1)) % players_count
 }
 
@@ -105,7 +107,7 @@ pub fn deal_setup(mode: &GameMode, current: usize, players: &mut Vec<Player>, fi
                 pb.inc(1);
 
                 // 早すぎるからms待ち
-                thread::sleep(Duration::from_millis(rand_range(50..=100)));
+                thread::sleep(Duration::from_millis(rand_range(10..=100)));
             } else {
                 break 'deck_deal;
             }
