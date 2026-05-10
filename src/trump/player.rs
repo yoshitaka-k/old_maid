@@ -232,6 +232,11 @@ impl Player {
         self.history.get_taken_index()
     }
 
+    /// 引かれた数値が多い順に出力
+    pub fn get_history_token_frequency(&self) -> Vec<usize> {
+        self.history.values_by_descending_frequency()
+    }
+
     /// 上がり順の保持、上がり順履歴に保持
     pub fn set_rank(&mut self, rank: usize) {
         self.status.set_rank(rank);
