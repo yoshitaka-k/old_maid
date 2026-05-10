@@ -3,7 +3,7 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/yoshitaka-k/old_maid)
 ![Lines of code](https://www.aschey.tech/tokei/github/yoshitaka-k/old_maid)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/yoshitaka-k/old_maid)
-[![License](https://img.shields.io/github/license/yoshitaka-k/old_maid)](https://github.com/yoshitaka-k/old_maid/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/yoshitaka-k/old_maid)](https://github.com/yoshitaka-k/old_maid/blob/main/LICENSE)
 
 Rustの勉強がてらババ抜きゲームでも作ってみようと思って作成中なぅ
 
@@ -19,4 +19,4 @@ cargo run -- --mode man
 ```
 
 ## License
-[Apache-2.0](https://github.com/yoshitaka-k/old_maid/blob/master/LICENSE)
+[Apache-2.0](https://github.com/yoshitaka-k/old_maid/blob/main/LICENSE)
