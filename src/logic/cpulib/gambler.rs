@@ -1,7 +1,7 @@
 use rand::prelude::SliceRandom;
 
 use crate::logic::cpulib::strategy::CpuStrategy;
-use crate::logic::cpulib::shuffle::{
+use crate::logic::shuffle::{
     double_cut,
     hindu_shuffle,
     riffle_shuffle,

@@ -1,5 +1,5 @@
 use crate::logic::cpulib::strategy::CpuStrategy;
-use crate::logic::cpulib::shuffle::{
+use crate::logic::shuffle::{
     hindu_shuffle,
     HinduParams,
 };
