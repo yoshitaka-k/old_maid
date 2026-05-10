@@ -45,12 +45,12 @@ impl Cpu {
     pub fn new_level(level_group: CpuLevelGroup) -> CpuLevel {
         let choices = match level_group {
             CpuLevelGroup::None =>[
-                CpuLevel::Beginner,
-                CpuLevel::Beginner,
-                CpuLevel::Beginner,
-                CpuLevel::Beginner,
-                CpuLevel::Beginner,
-                CpuLevel::Beginner,
+                CpuLevel::None,
+                CpuLevel::None,
+                CpuLevel::None,
+                CpuLevel::None,
+                CpuLevel::None,
+                CpuLevel::None,
             ],
             CpuLevelGroup::Beginner =>[
                 CpuLevel::Beginner,
