@@ -1,4 +1,6 @@
 use clap::Parser;
+use console::Style;
+use figlet_rs::FIGlet;
 
 use old_maid::cli::console::{info, system};
 use old_maid::game::{
@@ -19,7 +21,6 @@ struct Args {
 }
 
 //////////////////////////////////////////////////
-
 /// メイン
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
@@ -29,9 +30,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         _ => GameMode::OldMaid,
     };
 
-    println!("==============================");
-    system(&format!("Game Mode: old {}.", args.mode));
-    system("Key of Game Force quit. (Ctrl+C or Ctrl+D).");
+    // Title
+    let style = Style::new().cyan().bold();
+    let standard_font = FIGlet::standard().unwrap();
+    print!("{}", style.apply_to(standard_font.convert(&format!("Old {}", args.mode)).unwrap()));
+    println!("------------------------------");
+    println!("  Version: {}  |  License: {}", env!("CARGO_PKG_VERSION"), env!("CARGO_PKG_LICENSE"));
+    println!("  Starting Old {} Game Engine... 🚀", args.mode);
+    println!("------------------------------");
+    system("  Key of Game Force quit. (Ctrl+C or Ctrl+D).");
     println!("==============================");
 
     let cpu_member = cpu_member_input();
