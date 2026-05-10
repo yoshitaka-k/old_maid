@@ -1,5 +1,6 @@
 use crate::logic::cpulib::{
     riffle_shuffle,
+    RiffleParams,
     strategy::CpuStrategy,
 };
 use crate::Card;
@@ -11,7 +12,7 @@ use crate::Player;
 pub struct BeginnerStrategy;
 impl CpuStrategy for BeginnerStrategy {
     fn deck_shuffle(&self, cards: &mut Vec<Card>) {
-        riffle_shuffle(cards);
+        riffle_shuffle(cards, &RiffleParams::beginner());
     }
 
     fn organize_hand(&self, player: &mut Player) {
@@ -19,9 +20,9 @@ impl CpuStrategy for BeginnerStrategy {
     }
 
     fn choose_card(&self, len: usize) -> usize {
-        if len > 0 {
+        if len < 2 {
             return 0
         }
-        len
+        return 0
     }
 }

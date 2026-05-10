@@ -1,6 +1,8 @@
-use rand::prelude::SliceRandom;
-
-use crate::logic::cpulib::strategy::CpuStrategy;
+use crate::logic::cpulib::{
+    riffle_shuffle,
+    RiffleParams,
+    strategy::CpuStrategy,
+};
 use crate::Card;
 use crate::Player;
 
@@ -10,7 +12,7 @@ use crate::Player;
 pub struct VeteranStrategy;
 impl CpuStrategy for VeteranStrategy {
     fn deck_shuffle(&self, cards: &mut Vec<Card>) {
-        cards.shuffle(&mut rand::thread_rng());
+        riffle_shuffle(cards, &RiffleParams::veteran());
     }
 
     fn organize_hand(&self, player: &mut Player) {
@@ -18,9 +20,9 @@ impl CpuStrategy for VeteranStrategy {
     }
 
     fn choose_card(&self, len: usize) -> usize {
-        if len > 0 {
+        if len < 2 {
             return 0
         }
-        len
+        return 0
     }
 }
