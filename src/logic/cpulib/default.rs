@@ -20,14 +20,12 @@ impl CpuStrategy for NoneStrategy {
 
     /// 手札を並び替え
     fn organize_hand(&self, player: &mut Player) {
-        player.sort_hand();
-
         let hand = player.get_hand();
         hand.sort_by_key(|c| c.sort_tuple());
 
         if let Some(index) = hand.iter().position(|c| c.is_joker()) {
-            let card = hand.remove(index);
-            player.add_hand_to_index(0, card);
+            let joker = hand.remove(index);
+            hand.insert(0, joker);
         }
     }
 
