@@ -20,6 +20,7 @@ use crate::PlayerType;
 pub enum CpuLevelGroup {
     None,
     Beginner,
+    Gambler,
 }
 
 /// CPU強さ
@@ -59,6 +60,14 @@ impl Cpu {
                 CpuLevel::Medium,
                 CpuLevel::Medium,
                 CpuLevel::Random,
+            ],
+            CpuLevelGroup::Gambler =>[
+                CpuLevel::Random,
+                CpuLevel::Random,
+                CpuLevel::Random,
+                CpuLevel::Gambler,
+                CpuLevel::Gambler,
+                CpuLevel::Gambler,
             ],
         };
 

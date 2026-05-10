@@ -48,7 +48,7 @@ pub fn players_setup(cpu_count: usize) -> Vec<Player> {
 
     for i in 1..=cpu_count {
         let mut player = Player::new(format!("CPU {}", i));
-        player.set_player_type(PlayerType::Cpu(Cpu::new_level(CpuLevelGroup::Beginner)));
+        player.set_player_type(PlayerType::Cpu(Cpu::new_level(CpuLevelGroup::Gambler)));
 
         players.push(player);
     }
