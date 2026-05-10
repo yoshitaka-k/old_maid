@@ -22,7 +22,7 @@ impl CpuStrategy for VeteranStrategy {
     }
 
     fn choose_card(&self, len: usize) -> usize {
-        if len < 2 {
+        if len < 1 {
             return 0
         }
         return 0

@@ -18,9 +18,9 @@ impl CpuStrategy for GamblerStrategy {
     }
 
     fn choose_card(&self, len: usize) -> usize {
-        if len > 0 {
+        if len < 1 {
             return 0
         }
-        len
+        return 0
     }
 }
