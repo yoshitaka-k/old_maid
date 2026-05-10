@@ -37,6 +37,10 @@ impl CardSet {
         self.0.push(card);
     }
 
+    fn add_to_index(&mut self, index: usize, card: Card) {
+        self.0.insert(index, card);
+    }
+
     fn remove(&mut self, index: usize) -> Card {
         self.0.remove(index)
     }
@@ -178,6 +182,10 @@ impl Player {
     /// 手札にカードを1枚追加
     pub fn add_hand(&mut self, card: Card) {
         self.hand.add(card);
+    }
+
+    pub fn add_hand_to_index(&mut self, index: usize, card: Card) {
+        self.hand.add_to_index(index, card);
     }
 
     /// 手札のカードを1枚選択して取り出し削除
