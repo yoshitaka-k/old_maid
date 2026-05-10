@@ -1,4 +1,9 @@
+use rand::prelude::SliceRandom;
+
 use crate::logic::cpulib::strategy::CpuStrategy;
+use crate::logic::organize_hand::{
+    joker_in_first
+};
 use crate::logic::shuffle::{
     hindu_shuffle,
     HinduParams,
@@ -17,15 +22,11 @@ impl CpuStrategy for BeginnerStrategy {
     }
 
     /// 手札を並び替え
-    /// 一番初めの位置にジョーカーを持っていく
     fn organize_hand(&self, player: &mut Player) {
+        player.sort_hand();
         let hand = player.get_hand();
-        hand.sort_by_key(|c| c.sort_tuple());
 
-        if let Some(index) = hand.iter().position(|c| c.is_joker()) {
-            let joker = hand.remove(index);
-            hand.insert(0, joker);
-        }
+        joker_in_first(hand);
     }
 
     /// 相手のカードを引く場所
@@ -33,6 +34,6 @@ impl CpuStrategy for BeginnerStrategy {
         if len < 1 {
             return 0
         }
-        return 0
+        [0, (len-1)].choose(&mut rand::thread_rng()).unwrap().clone()
     }
 }

@@ -1,9 +1,13 @@
 use crate::logic::cpulib::strategy::CpuStrategy;
+use crate::logic::organize_hand::{
+    joker_in_center,
+};
 use crate::logic::shuffle::{
     deal_shuffle,
     double_cut,
     DealParams,
 };
+use crate::utils::{rand_range};
 use crate::Card;
 use crate::Player;
 
@@ -20,19 +24,10 @@ impl CpuStrategy for NoneStrategy {
 
     /// 手札を並び替え
     fn organize_hand(&self, player: &mut Player) {
-        let history_token = player.get_history_token_frequency();
+        player.sort_hand();
         let hand = player.get_hand();
-        hand.sort_by_key(|c| c.sort_tuple());
 
-        if let Some(joker_index) = hand.iter().position(|c| c.is_joker()) {
-            let insert_index = history_token
-                .into_iter()
-                .find(|&i| i < hand.len())
-                .unwrap_or(0);
-
-            let joker = hand.remove(joker_index);
-            hand.insert(insert_index, joker);
-        }
+        joker_in_center(hand);
     }
 
     /// 相手のカードを引く場所
@@ -40,6 +35,6 @@ impl CpuStrategy for NoneStrategy {
         if len < 1 {
             return 0
         }
-        return 0
+        rand_range(0..len)
     }
 }

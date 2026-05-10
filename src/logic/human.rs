@@ -1,6 +1,9 @@
 use rand::prelude::SliceRandom;
 use crate::cli::console::{read_usize_line, error};
 
+use crate::logic::organize_hand::{
+    joker_in_history_taken,
+};
 use crate::logic::shuffle::{
     double_cut,
     hindu_shuffle,
@@ -29,8 +32,12 @@ impl Human {
 
     /// 手札の並び替え
     pub fn organize_hand(player: &mut Player) {
+        let history_token = player.get_history_token_frequency();
+
         let hand = player.get_hand();
         hand.shuffle(&mut rand::thread_rng());
+
+        joker_in_history_taken(hand, history_token);
     }
 
     /// 相手の手札から左から何番目を選択する

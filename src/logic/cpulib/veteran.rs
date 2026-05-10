@@ -1,4 +1,9 @@
+use rand::prelude::SliceRandom;
+
 use crate::logic::cpulib::strategy::CpuStrategy;
+use crate::logic::organize_hand::{
+    joker_in_history_taken,
+};
 use crate::logic::shuffle::{
     double_cut,
     hindu_shuffle,
@@ -8,7 +13,7 @@ use crate::logic::shuffle::{
     RiffleParams,
     DealParams,
 };
-use crate::rand_range;
+use crate::utils::rand_range;
 use crate::Card;
 use crate::Player;
 
@@ -25,7 +30,12 @@ impl CpuStrategy for VeteranStrategy {
     }
 
     fn organize_hand(&self, player: &mut Player) {
-        player.sort_hand();
+        let history_token = player.get_history_token_frequency();
+
+        let hand = player.get_hand();
+        hand.shuffle(&mut rand::thread_rng());
+
+        joker_in_history_taken(hand, history_token);
     }
 
     fn choose_card(&self, len: usize) -> usize {

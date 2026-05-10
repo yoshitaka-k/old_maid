@@ -1,7 +1,7 @@
 use rand::prelude::SliceRandom;
 
 use crate::logic::cpulib::strategy::CpuStrategy;
-use crate::rand_range;
+use crate::utils::rand_range;
 use crate::Card;
 use crate::Player;
 
@@ -26,7 +26,6 @@ impl CpuStrategy for RandomStrategy {
         if len < 1 {
             return 0
         }
-
         rand_range(0..len)
     }
 }

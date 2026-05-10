@@ -55,9 +55,9 @@ impl HinduParams {
 impl Default for HinduParams {
     fn default() -> Self {
         Self {
-            iterations: 10,
-            min_chunk: 10,
-            max_chunk: 20,
+            iterations: 8,
+            min_chunk: 5,
+            max_chunk: 15,
         }
     }
 }

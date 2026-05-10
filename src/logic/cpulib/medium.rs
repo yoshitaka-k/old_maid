@@ -1,10 +1,16 @@
+use rand::prelude::SliceRandom;
+
 use crate::logic::cpulib::strategy::CpuStrategy;
+use crate::logic::organize_hand::{
+    joker_in_last,
+};
 use crate::logic::shuffle::{
     riffle_shuffle,
     hindu_shuffle,
     RiffleParams,
     HinduParams,
 };
+use crate::utils::{get_center_position};
 use crate::Card;
 use crate::Player;
 
@@ -22,19 +28,10 @@ impl CpuStrategy for MediumStrategy {
     /// 手札を並び替え
     /// 引かれた箇所が多い位置にジョーカーを持っていく
     fn organize_hand(&self, player: &mut Player) {
-        let history_token = player.get_history_token_frequency();
         let hand = player.get_hand();
-        hand.sort_by_key(|c| c.sort_tuple());
+        hand.shuffle(&mut rand::thread_rng());
 
-        if let Some(joker_index) = hand.iter().position(|c| c.is_joker()) {
-            let insert_index = history_token
-                .into_iter()
-                .find(|&i| i < hand.len())
-                .unwrap_or(0);
-
-            let joker = hand.remove(joker_index);
-            hand.insert(insert_index, joker);
-        }
+        joker_in_last(hand);
     }
 
     /// 相手のカードを引く場所
@@ -42,6 +39,6 @@ impl CpuStrategy for MediumStrategy {
         if len < 1 {
             return 0
         }
-        return 0
+        get_center_position(len)
     }
 }

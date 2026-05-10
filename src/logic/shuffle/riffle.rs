@@ -2,6 +2,7 @@ use rand::Rng;
 use std::thread;
 use std::time::Duration;
 
+use crate::utils::get_center_position;
 use crate::Card;
 
 /// リフル回数・1回あたりに落とす枚数の上限の指定
@@ -80,10 +81,7 @@ fn riffle_shuffle_once(cards: &mut Vec<Card>, max_chunk: usize) {
     let mut rng = rand::thread_rng();
 
     // だいたい真ん中付近で山を2つに切る（少しだけランダム）。
-    let base = cards.len() / 2;
-    let jitter = (cards.len() / 10).max(1);
-    let cut = (base as isize + rng.gen_range(-(jitter as isize)..=(jitter as isize)))
-        .clamp(1, cards.len() as isize - 1) as usize;
+    let cut = get_center_position(cards.len());
 
     let mut right = cards.split_off(cut);
     let mut left = std::mem::take(cards);
