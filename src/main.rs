@@ -14,6 +14,7 @@ use old_maid::game::{
 };
 use old_maid::utils::{capitalize, rand_range};
 use old_maid::{Field, GameMode};
+use old_maid::wait_for_dramatic_pause;
 
 //////////////////////////////////////////////////
 
@@ -50,11 +51,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Player setup
     let cpu_member = cpu_member_input();
     info(&format!("Confirmed: {} CPU Players Joining...", cpu_member));
+    wait_for_dramatic_pause();
 
     println!("------------------------------");
 
     let cpu_group = cpu_group_input();
     info(&format!("CPU Difficulty Preset: {:?}.", cpu_group));
+    wait_for_dramatic_pause();
 
     println!("------------------------------");
 
@@ -62,20 +65,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let players_count = players.len();
 
     system(&format!("Players: {} members.", players_count));
+    wait_for_dramatic_pause();
 
     println!("------------------------------");
 
     // Temp dice role Player.
     let temp_current = rand_range(0..players_count);
     system(&format!("Pre-Roller: {}", players[temp_current].get_name()));
+    wait_for_dramatic_pause();
 
     // Dice role Player.
     let dice_current = init_current_player(temp_current, players_count);
     system(&format!("Deciding Roller: {}", players[dice_current].get_name()));
+    wait_for_dramatic_pause();
 
     // Start current Player.
     let current = init_current_player(dice_current, players_count);
     system(&format!("Starting Dealer: {}", players[current].get_name()));
+    wait_for_dramatic_pause();
 
     println!("------------------------------");
 
@@ -86,14 +93,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("------------------------------");
 
     organize_my_hand_setup(&mut players, &mut field);
+    wait_for_dramatic_pause();
 
     println!("------------------------------");
     for player in &mut players {
         info(&format!("{} Hand Count: {}", player.get_name(), player.hand_len()));
+        wait_for_dramatic_pause();
     }
-
-    println!("------------------------------");
-    players[0].display_hand();
 
     run(&mode, &mut players, &mut field);
 

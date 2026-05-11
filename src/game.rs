@@ -28,10 +28,7 @@ pub fn init_current_player(temp_current: usize, players_count: usize) -> usize {
 pub fn cpu_member_input() -> usize {
     let cpu_count = loop {
         match read_usize_line(
-            &format!(
-                "CPU Player Num (Input 1-{}, Default {}): ",
-                MAX_CPU_COUNT, DEFAULT_CPU_COUNT
-            ),
+            &format!("CPU Player Num (Input 1-{}, Default {}): ", MAX_CPU_COUNT, DEFAULT_CPU_COUNT),
             DEFAULT_CPU_COUNT,
         ) {
             Ok(num) if (1..=MAX_CPU_COUNT).contains(&num) => {
@@ -106,7 +103,7 @@ fn deck_setup(mode: &GameMode, player: &Player, field: &mut Field) -> Deck {
 
     // Deck Shuffle.
     execute_with_spinner(
-            &format!("Deck setup and {} a shuffle.", player.get_name()),
+            &format!("Deck setup and {} a shuffle...", player.get_name()),
             &format!("Deck setup and {} a shuffle end.", player.get_name()),
         || {
         if deck.has_mystery_card() {
@@ -179,7 +176,7 @@ fn set_progress_spinners(players: &mut Vec<Player>) -> Vec<ProgressBar> {
                 .unwrap()
                 .tick_strings(&["|", "/", "-", "\\"]),
         );
-        pb.set_message(format!("{} Arrange my Hand (pair off).", player.get_name()));
+        pb.set_message(format!("{} Arrange my Hand (pair off)...", player.get_name()));
         spinners.push(pb);
     }
 
@@ -227,12 +224,13 @@ fn run_player(players: &mut Vec<Player>, current: usize, target_player_idx: usiz
     let pick_card_idx: usize;
 
     if players[current].has_human() {
+        players[current].display_hand();
         pick_card_idx = Human::choose_card(players, target_player_idx);
     } else {
         let cpu = Cpu::new();
         pick_card_idx = cpu.choose_card(players, current, target_player_idx);
 
-        let msg = &format!("Draw a card from {}", players[target_player_idx].get_name());
+        let msg = &format!("Draw a card from {}...", players[target_player_idx].get_name());
         execute_with_spinner(msg, "", || {
             // 早すぎるから少し待機
             let ms = rand_range(200..300);
@@ -310,10 +308,7 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
         // Pick card.
         let pick_card = players[target_player_idx].remove_hand(pick_card_idx);
         if players[current].has_human() {
-            player_info(
-                &format!("pick card: {}", pick_card.get_name()),
-                players[current].has_human(),
-            );
+            info(&format!("pick card: {}", pick_card.get_name()));
         }
         players[current].add_hand(pick_card.clone());
 
@@ -327,7 +322,7 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
         if !pair.is_empty() {
             field.record_discards(pair);
 
-            player_discard_pair_info(&pick_card.get_name(), players[current].has_human());
+            info(&format!("Discard a pair {}.", pick_card.get_name()));
 
             // player clear.
             if players[current].hand_len() == 0 {

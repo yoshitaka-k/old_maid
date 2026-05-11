@@ -57,16 +57,6 @@ pub fn clear_info(rank: usize, name: &str) {
     println!("{}", Style::new().yellow().apply_to(&format!("{}. cleard {}.", rank, name)));
 }
 
-/// プレイヤー情報
-pub fn player_info(prompt: &str, is_human: bool) {
-    println!("{}", player_color(is_human).apply_to(prompt));
-}
-
-/// プレイヤーが捨てたカード
-pub fn player_discard_pair_info(card_name: &String, is_human: bool) {
-    player_info(&format!("Discard a pair {}.", card_name), is_human);
-}
-
 /// 手札情報
 pub fn player_hand_info(player: &Player) {
     let name = player.get_name();

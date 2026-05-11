@@ -13,3 +13,7 @@ pub use cli::console::{error, read_usize_line};
 pub use trump::player::PlayerType;
 pub use trump::{Card, Deck, Field, GameMode, Player};
 pub use utils::rand_range;
+
+pub fn wait_for_dramatic_pause() {
+    std::thread::sleep(std::time::Duration::from_millis(200));
+}
