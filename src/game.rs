@@ -284,7 +284,7 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
                     }
                 }
 
-                field.display_rank();
+                game_result(field);
 
                 break 'game_loop;
             }

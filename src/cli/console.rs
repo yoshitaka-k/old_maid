@@ -1,13 +1,13 @@
 /// ターミナルに表示させるもの
 
-use std::time::Duration;
+use console::Style;
 
 use std::io::{ self };
+use std::time::Duration;
 use indicatif::{ MultiProgress, ProgressBar, ProgressStyle };
 use rustyline::error::ReadlineError;
-// use rustyline::{ DefaultEditor, Result };
 
-use console::Style;
+use crate::Field;
 use crate::Player;
 
 //////////////////////////////////////////////////
@@ -65,6 +65,18 @@ pub fn player_hand_info(player: &Player) {
     if player.has_human() {
         player.display_hand();
     }
+}
+
+//////////////////////////////////////////////////
+
+pub fn game_result(field: &Field) {
+    let ranking =  field.get_rank();
+
+    println!("======= {} =======", Style::new().yellow().apply_to("Round Result"));
+    for (i, player) in ranking.iter().enumerate() {
+        println!("{}. {} (Joker hold {} turn.)", field.get_rank_icon(i), player.get_name(), player.get_joker_turn());
+    }
+    println!("==============================");
 }
 
 //////////////////////////////////////////////////

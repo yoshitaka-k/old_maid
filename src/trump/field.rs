@@ -1,4 +1,3 @@
-use console::Style;
 use crate::Card;
 use crate::Player;
 
@@ -6,7 +5,7 @@ use crate::Player;
 struct Ranking(Vec<Player>);
 
 impl Ranking {
-    fn rank_icon(rank: usize) -> String {
+    fn rank_icon(&self, rank: usize) -> String {
         let emoji = match rank {
             0 => "🥇".to_string(),
             1 => "🥈".to_string(),
@@ -16,20 +15,20 @@ impl Ranking {
         emoji.to_string()
     }
 
-    fn display(&self) {
-        println!("======= {} =======", Style::new().yellow().apply_to("Ranking Result"));
-        for (i, player) in self.0.iter().enumerate() {
-            println!("{}. {} (Joker hold {} turn.)", Ranking::rank_icon(i), player.get_name(), player.get_joker_turn());
-        }
-        println!("==============================");
-    }
-
     fn add(&mut self, player: Player) {
         self.0.push(player);
     }
 
+    fn get(&self) -> &Vec<Player>{
+        &self.0
+    }
+
     fn len(&self) -> usize {
         self.0.len()
+    }
+
+    fn clear(&mut self) {
+        self.0.clear();
     }
 }
 
@@ -51,16 +50,26 @@ impl Field {
         }
     }
 
+    pub fn clear(&mut self) {
+        self.rank.clear();
+        self.discard.clear();
+        self.mystery_card = None;
+    }
+
     pub fn add_rank(&mut self, player: Player) {
         self.rank.add(player);
+    }
+
+    pub fn get_rank(&self) -> &Vec<Player> {
+        self.rank.get()
     }
 
     pub fn get_rank_len(&self) -> usize {
         self.rank.len()
     }
 
-    pub fn display_rank(&self) {
-        self.rank.display();
+    pub fn get_rank_icon(&self, rank: usize) -> String {
+        self.rank.rank_icon(rank)
     }
 
     pub fn set_mystery_card(&mut self, mystery_card: Option<Card>) {
