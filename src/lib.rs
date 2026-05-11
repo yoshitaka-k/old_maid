@@ -9,7 +9,7 @@ pub mod trump;
 /// 簡易にした関数群
 pub mod utils;
 
-pub use cli::console::{error, read_usize_line};
+pub use cli::console::{error, input_usize_read_line};
 pub use trump::player::PlayerType;
 pub use trump::{Card, Deck, Field, GameMode, Player};
 pub use utils::rand_range;

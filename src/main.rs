@@ -63,7 +63,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut players = players_setup(cpu_member, &cpu_group);
     let players_count = players.len();
-
     system(&format!("Players: {} members.", players_count));
     wait_for_dramatic_pause();
 

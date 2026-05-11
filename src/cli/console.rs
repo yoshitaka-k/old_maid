@@ -70,6 +70,27 @@ pub fn player_hand_info(player: &Player) {
 //////////////////////////////////////////////////
 
 /// 入力処理
+///指定範囲内の値が入力されるまで表示
+pub fn input_usize_read_line(input_msg: &str,
+                        err_msg: &str,
+                        default_num: usize,
+                        min_num: usize,
+                        max_num: usize) -> usize {
+    loop {
+        match read_usize_line(
+            input_msg,
+            default_num,
+        ) {
+            Ok(num) if (min_num..=max_num).contains(&num) => {
+                break num;
+            }
+            Ok(_) => error(err_msg),
+            Err(_) => error("The input is not a number."),
+        }
+    }
+}
+
+/// 入力処理（ベース）
 fn read_line(prompt: &str) -> rustyline::Result<String> {
     let mut rl = rustyline::DefaultEditor::new()?;
     let readline = rl.readline(&format!("{}", prompt));

@@ -11,6 +11,7 @@ use crate::trump::player::PlayerType;
 use crate::utils::{dice_role, rand_range};
 use crate::{Deck, Field, GameMode, Player};
 
+const MIN_CPU_COUNT: usize = 1;
 const MAX_CPU_COUNT: usize = 7;
 const DEFAULT_CPU_COUNT: usize = 3;
 
@@ -26,19 +27,13 @@ pub fn init_current_player(temp_current: usize, players_count: usize) -> usize {
 
 /// 何人のCPUを参加させるか入力
 pub fn cpu_member_input() -> usize {
-    let cpu_count = loop {
-        match read_usize_line(
-            &format!("CPU Player Num (Input 1-{}, Default {}): ", MAX_CPU_COUNT, DEFAULT_CPU_COUNT),
-            DEFAULT_CPU_COUNT,
-        ) {
-            Ok(num) if (1..=MAX_CPU_COUNT).contains(&num) => {
-                break num;
-            }
-            Ok(_) => error(&format!("The input is not a number 1-{}.", MAX_CPU_COUNT)),
-            Err(_) => error("The input is not a number."),
-        }
-    };
-    cpu_count
+    input_usize_read_line(
+        &format!("CPU Player Num (Input {}-{}, Default {}): ", MIN_CPU_COUNT, MAX_CPU_COUNT, DEFAULT_CPU_COUNT),
+        &format!("The input is not a number {}-{}.", MIN_CPU_COUNT, MAX_CPU_COUNT),
+        DEFAULT_CPU_COUNT,
+        MIN_CPU_COUNT,
+        MAX_CPU_COUNT
+    )
 }
 
 /// CPUの強さグループの選択
@@ -46,18 +41,12 @@ pub fn cpu_group_input() -> CpuLevelGroup {
     println!("CPU Strategy leve group Input.");
     println!("1: Beginner, 2: Medium, 3: Veteran, 0: Random Selected.");
 
-    let input = loop {
-        match read_usize_line(
-            &format!("CPU Strategy leve group (Default {}): ", DEFAULT_CPU_LEVEL_GROUP),
-            DEFAULT_CPU_LEVEL_GROUP
-        ) {
-            Ok(num) if (0..=3).contains(&num) => {
-                break num;
-            },
-            Ok(_) => error(&format!("The input is not a number 0-3.")),
-            Err(_) => error("The input is not a number."),
-        };
-    };
+    let input = input_usize_read_line(
+        &format!("CPU Strategy leve group (Default {}): ", DEFAULT_CPU_LEVEL_GROUP),
+        &format!("The input is not a number 0-3."),
+        DEFAULT_CPU_LEVEL_GROUP,
+        0, 3
+    );
 
     match input {
         0 => *[

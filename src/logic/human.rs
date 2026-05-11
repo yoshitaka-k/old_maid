@@ -1,5 +1,5 @@
 use rand::prelude::SliceRandom;
-use crate::cli::console::{read_usize_line, error};
+use crate::cli::console::{input_usize_read_line};
 
 use crate::logic::organize_hand::{
     joker_in_history_taken,
@@ -16,6 +16,9 @@ use crate::logic::shuffle::{
 
 use crate::Card;
 use crate::Player;
+
+const MIN_CHOOSE_INDEX: usize = 0;
+const DEFAULT_CHOOSE_INDEX: usize = 0;
 
 //////////////////////////////////////////////////
 
@@ -42,20 +45,20 @@ impl Human {
 
     /// 相手の手札から左から何番目を選択する
     pub fn choose_card(players: &Vec<Player>, target_player_idx: usize) -> usize {
-        let max_idx = players[target_player_idx].hand_len().saturating_sub(1);
+        let max_index = players[target_player_idx].hand_len().saturating_sub(1);
 
-        loop {
-            match read_usize_line(&format!(
-                        "Draw a card from {} (index from the left 0-{}, Default 0): ",
-                        players[target_player_idx].get_name(),
-                        max_idx
-                    ), 0) {
-                Ok(num) if (0..=max_idx).contains(&num) => {
-                    break num;
-                },
-                Ok(_) => error(&format!("The input is not a number 0-{}.", max_idx)),
-                Err(_) => error("The input is not a number."),
-            }
-        }
+        input_usize_read_line(
+            &format!(
+                "Draw a card from {} (index from the left {}-{}, Default {}): ",
+                players[target_player_idx].get_name(),
+                MIN_CHOOSE_INDEX,
+                max_index,
+                DEFAULT_CHOOSE_INDEX
+            ),
+            &format!("The input is not a number {}-{}.", MIN_CHOOSE_INDEX, max_index),
+            DEFAULT_CHOOSE_INDEX,
+            MIN_CHOOSE_INDEX,
+            max_index
+        )
     }
 }
