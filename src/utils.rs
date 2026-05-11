@@ -8,11 +8,15 @@ use rand::distributions::uniform::SampleUniform;
 
 /// 真ん中あたりの位置を取得（少しだけランダム）
 pub fn get_center_position(cards_len: usize) -> usize {
+    if cards_len == 0 {
+        return 0;
+    }
+
     let mut rng = rand::thread_rng();
     let base = cards_len / 2;
     let jitter = (cards_len / 10).max(1);
     (base as isize + rng.gen_range(-(jitter as isize)..=(jitter as isize)))
-        .clamp(1, cards_len as isize - 1) as usize
+        .clamp(0, cards_len as isize - 1) as usize
 }
 
 /// 頭文字だけ大文字にする簡単な関数っ
