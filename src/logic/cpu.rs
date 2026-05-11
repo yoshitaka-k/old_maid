@@ -17,21 +17,23 @@ use crate::PlayerType;
 //////////////////////////////////////////////////
 
 /// CPU強さグループ
+#[derive(Debug, Copy, Clone)]
 pub enum CpuLevelGroup {
     None,
     Beginner,
-    Gambler,
+    Medium,
+    Veteran,
 }
 
 /// CPU強さ
 #[derive(Clone)]
 pub enum CpuLevel {
     None,
-    Random,
     Beginner,
     Medium,
-    Gambler,
     Veteran,
+    Gambler,
+    Random,
 }
 
 //////////////////////////////////////////////////
@@ -45,7 +47,7 @@ impl Cpu {
 
     /// CPUの強さグループ
     /// 6分の1でCPUの強さを決める
-    fn level_choices(level_group: CpuLevelGroup) -> [CpuLevel; 6] {
+    fn level_choices(level_group: &CpuLevelGroup) -> [CpuLevel; 6] {
         match level_group {
             CpuLevelGroup::None => [
                 CpuLevel::None, CpuLevel::None, CpuLevel::None,
@@ -56,17 +58,21 @@ impl Cpu {
                 CpuLevel::Medium,   CpuLevel::Medium,
                 CpuLevel::Random,
             ],
-            CpuLevelGroup::Gambler => [
-                CpuLevel::Random,  CpuLevel::Random,  CpuLevel::Random,
-                CpuLevel::Gambler, CpuLevel::Gambler, CpuLevel::Gambler,
+            CpuLevelGroup::Medium => [
+                CpuLevel::Beginner,  CpuLevel::Medium,  CpuLevel::Medium,
+                CpuLevel::Medium, CpuLevel::Gambler, CpuLevel::Random,
+            ],
+            CpuLevelGroup::Veteran => [
+                CpuLevel::Medium,  CpuLevel::Veteran,  CpuLevel::Veteran,
+                CpuLevel::Veteran, CpuLevel::Gambler, CpuLevel::Random,
             ],
         }
     }
 
     /// CPUの強さ設定
     /// 強さグループから6分の1でCPUの強さを決める
-    pub fn new_level(level_group: CpuLevelGroup) -> CpuLevel {
-        let choices = Self::level_choices(level_group);
+    pub fn new_level(level_group: &CpuLevelGroup) -> CpuLevel {
+        let choices = Self::level_choices(&level_group);
         choices.choose(&mut rand::thread_rng()).unwrap().clone()
     }
 
@@ -78,11 +84,11 @@ impl Cpu {
             PlayerType::Cpu(level) => {
                 match level {
                     CpuLevel::None => Box::new(NoneStrategy),
-                    CpuLevel::Random => Box::new(RandomStrategy),
                     CpuLevel::Beginner => Box::new(BeginnerStrategy),
                     CpuLevel::Medium => Box::new(MediumStrategy),
-                    CpuLevel::Gambler => Box::new(GamblerStrategy),
                     CpuLevel::Veteran => Box::new(VeteranStrategy),
+                    CpuLevel::Gambler => Box::new(GamblerStrategy),
+                    CpuLevel::Random => Box::new(RandomStrategy),
                 }
             }
         }

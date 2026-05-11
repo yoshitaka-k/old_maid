@@ -4,7 +4,13 @@ use figlet_rs::FIGlet;
 
 use old_maid::cli::console::{info, system, system_bold};
 use old_maid::game::{
-    cpu_member_input, deal_setup, init_current_player, organize_my_hand_setup, players_setup, run,
+    cpu_member_input,
+    cpu_group_input,
+    players_setup,
+    deal_setup,
+    organize_my_hand_setup,
+    init_current_player,
+    run,
 };
 use old_maid::utils::{capitalize, rand_range};
 use old_maid::{Field, GameMode};
@@ -41,8 +47,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     system_bold("  Key of Game Force quit. (Ctrl+C or Ctrl+D).");
     println!("==============================");
 
+    // Player setup
     let cpu_member = cpu_member_input();
-    let mut players = players_setup(cpu_member);
+    info(&format!("Confirmed: {} CPU Players Joining...", cpu_member));
+
+    println!("------------------------------");
+
+    let cpu_group = cpu_group_input();
+    info(&format!("CPU Difficulty Preset: {:?}.", cpu_group));
+
+    println!("------------------------------");
+
+    let mut players = players_setup(cpu_member, &cpu_group);
     let players_count = players.len();
 
     system(&format!("Players: {} members.", players_count));

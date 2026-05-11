@@ -1,5 +1,7 @@
 use std::thread;
 use std::time::Duration;
+use rand::prelude::SliceRandom;
+
 
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 
@@ -11,6 +13,8 @@ use crate::{Deck, Field, GameMode, Player};
 
 const MAX_CPU_COUNT: usize = 7;
 const DEFAULT_CPU_COUNT: usize = 3;
+
+const DEFAULT_CPU_LEVEL_GROUP: usize = 0;
 
 /// 起家指定
 pub fn init_current_player(temp_current: usize, players_count: usize) -> usize {
@@ -40,15 +44,54 @@ pub fn cpu_member_input() -> usize {
     cpu_count
 }
 
+/// CPUの強さグループの選択
+pub fn cpu_group_input() -> CpuLevelGroup {
+    println!("CPU Strategy leve group Input.");
+    println!("1: Beginner, 2: Medium, 3: Veteran, 0: Random Selected.");
+
+    let input = loop {
+        match read_usize_line(
+            &format!("CPU Strategy leve group (Default {}): ", DEFAULT_CPU_LEVEL_GROUP),
+            DEFAULT_CPU_LEVEL_GROUP
+        ) {
+            Ok(num) if (0..=3).contains(&num) => {
+                break num;
+            },
+            Ok(_) => error(&format!("The input is not a number 0-3.")),
+            Err(_) => error("The input is not a number."),
+        };
+    };
+
+    match input {
+        0 => *[
+            CpuLevelGroup::Beginner,
+            CpuLevelGroup::Medium,
+            CpuLevelGroup::Veteran,
+        ]
+        .choose(&mut rand::thread_rng())
+        .unwrap(),
+        1 => CpuLevelGroup::Beginner,
+        2 => CpuLevelGroup::Medium,
+        3 => CpuLevelGroup::Veteran,
+        _ => *[
+            CpuLevelGroup::Beginner,
+            CpuLevelGroup::Medium,
+            CpuLevelGroup::Veteran,
+        ]
+        .choose(&mut rand::thread_rng())
+        .unwrap(),
+    }
+}
+
 /// 参加プレイヤーの初期設定
-pub fn players_setup(cpu_count: usize) -> Vec<Player> {
+pub fn players_setup(cpu_count: usize, cpu_group: &CpuLevelGroup) -> Vec<Player> {
     // Player setup.
     let mut players = Vec::new();
     players.push(Player::new(String::from("Player")));
 
     for i in 1..=cpu_count {
         let mut player = Player::new(format!("CPU {}", i));
-        player.set_player_type(PlayerType::Cpu(Cpu::new_level(CpuLevelGroup::Gambler)));
+        player.set_player_type(PlayerType::Cpu(Cpu::new_level(cpu_group)));
 
         players.push(player);
     }
