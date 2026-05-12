@@ -10,7 +10,7 @@ use crate::cli::console::*;
 use crate::logic::{Cpu, CpuLevelGroup, Human};
 use crate::trump::player::PlayerType;
 use crate::utils::{dice_role, rand_range};
-use crate::{Deck, Field, GameMode, Player};
+use crate::{GameMode, Deck, Field, Player};
 
 use crate::constants::{
     MIN_CPU_COUNT,
@@ -426,14 +426,14 @@ fn joker_bonus_points(players: &[Player], bonus_points: &[usize]) {
 
         let mut turn_str = String::new();
         for turn in turns {
-            turn_str = format!("{} {:<2}", turn_str, turn);
+            turn_str = format!("{} {:>2} tn", turn_str, turn);
         }
         println!("{} )", turn_str.trim());
     }
 }
 
 /// 総合順位
-fn total_rank(players: &[Player], bonus_points: &[usize]) {
+fn total_rank(mode: &GameMode, players: &[Player], bonus_points: &[usize]) {
     println!("{}", Style::new().green().apply_to("総合順位（同点は参加順）"));
 
     let mut order: Vec<usize> = (0..players.len()).collect();
@@ -446,27 +446,44 @@ fn total_rank(players: &[Player], bonus_points: &[usize]) {
     for (place, &idx) in order.iter().enumerate() {
         let p = &players[idx];
         let bonus = bonus_points.get(idx).copied().unwrap_or(0);
-        let total_point = p.get_point() + bonus;
         let medal = match place {
             0 => RANK_1ST_ICON,
             1 => RANK_2ND_ICON,
             2 => RANK_3RD_ICON,
             _ => "  ",
         };
-        println!(
-            "  {:>2} {} {:<6} — {:>2} pt (base {:>2} + bonus {:>1})",
+
+        let mut msg = format!(
+            "  {:>2} {} {:<6}",
             place + 1,
             medal,
-            p.get_name(),
-            total_point,
-            p.get_point(),
-            bonus
+            p.get_name()
         );
+
+        match mode {
+            GameMode::OldMaid => {
+                msg = format!(
+                    "{} — {:>2} pt (base {:>2} + bonus {:>1})",
+                    msg,
+                    p.get_point() + bonus,
+                    p.get_point(),
+                    bonus
+                );
+            }
+            GameMode::OldMan => {
+                msg = format!("{} - {:>2} pt",
+                    msg,
+                    p.get_point()
+                );
+            }
+        }
+
+        println!("{}", msg);
     }
 }
 
 /// 合計リザルト（総ポイント順。同点は `players` の参加順＝先頭ほど上位）
-pub fn game_result(players: &[Player]) {
+pub fn game_result(mode: &GameMode, players: &[Player]) {
     if players.is_empty() {
         return;
     }
@@ -482,11 +499,17 @@ pub fn game_result(players: &[Player]) {
     print_hr('-', 50);
 
     let bonus_points = joker_turn_bonus_points(players);
-    joker_bonus_points(players, &bonus_points);
 
-    print_hr('-', 50);
+    match mode {
+        GameMode::OldMaid => {
+            joker_bonus_points(players, &bonus_points);
 
-    total_rank(players, &bonus_points);
+            print_hr('-', 50);
+        }
+        GameMode::OldMan => {}
+    }
+
+    total_rank(mode, players, &bonus_points);
 
     print_hr('=', 50);
 }

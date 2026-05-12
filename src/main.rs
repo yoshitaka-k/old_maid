@@ -154,7 +154,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         current = (current + 1) % players_count;
     }
 
-    game_result(&players);
+    game_result(&mode, &players);
 
     system("Game end.");
 

@@ -5,8 +5,7 @@ use std::time::Duration;
 use indicatif::{ MultiProgress, ProgressBar, ProgressStyle };
 use rustyline::error::ReadlineError;
 
-use crate::Field;
-use crate::Player;
+use crate::{Field, Player};
 
 use crate::constants::{
     RANK_1ST_ICON,
@@ -110,13 +109,13 @@ pub fn round_result(field: &Field) {
     println!("================== {} ==================", style_title);
 
     for (i, player) in ranking.iter().enumerate() {
-        println!(
-            "  {:>2} {} {:<6} (Joker hold {} turn.)",
+        println!("{}", format!(
+            "  {:>2} {} {:<6} - {:>2} pt",
             i + 1,
             rank_icon(i),
             player.get_name(),
-            player.get_joker_turn()
-        );
+            player.get_point()
+        ));
     }
 
     print_hr('=', 50);
