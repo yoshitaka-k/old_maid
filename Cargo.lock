@@ -339,7 +339,7 @@ dependencies = [
 
 [[package]]
 name = "old_maid"
-version = "0.15.0"
+version = "0.16.0"
 dependencies = [
  "clap",
  "console",
