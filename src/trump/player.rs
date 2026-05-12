@@ -23,7 +23,7 @@ impl CardSet {
     fn display(&self) {
         let mut msg: String = String::new();
 
-        print!("Player Hand: ");
+        print!("  Player Hand: ");
         for card in self.0.clone() {
             msg = format!("{}{}, ", msg, card.get_name());
         }

@@ -2,7 +2,14 @@ use clap::Parser;
 use console::Style;
 use figlet_rs::FIGlet;
 
-use old_maid::cli::console::{info, system, system_bold};
+use old_maid::cli::console::{
+    print_single_separator,
+    print_double_separator,
+    print_hr,
+    info,
+    system,
+    system_bold
+};
 use old_maid::game::{
     cpu_member_input,
     cpu_group_input,
@@ -44,7 +51,7 @@ fn game_result(players: &[Player]) {
         return;
     }
 
-    println!("======= {} =======", Style::new().yellow().apply_to("Total Game Result"));
+    println!("================ {} ===============", Style::new().yellow().apply_to("Total Game Result"));
 
     println!("{}", Style::new().dim().apply_to("各ラウンドの獲得ポイント"));
 
@@ -62,7 +69,7 @@ fn game_result(players: &[Player]) {
         println!("{} )", pt.trim());
     }
 
-    println!("------------------------------");
+    print_hr('-', 50);
 
     println!("{}", Style::new().green().apply_to("総合順位（同点は参加順）"));
 
@@ -91,7 +98,7 @@ fn game_result(players: &[Player]) {
         );
     }
 
-    println!("==============================");
+    print_hr('=', 50);
 }
 
 /// メイン
@@ -107,43 +114,49 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let style = Style::new().cyan().bold();
     let standard_font = FIGlet::standard().unwrap();
     print!("{}", style.apply_to(standard_font.convert(&format!("Old {}", capitalize(&args.mode))).unwrap()));
-    println!("------------------------------");
+
+    print_single_separator();
+
     println!("  Version: {}  |  License: {}", env!("CARGO_PKG_VERSION"), env!("CARGO_PKG_LICENSE"));
     println!("  Starting Old {} Game Engine... 🚀", capitalize(&args.mode));
-    println!("------------------------------");
+
+    print_single_separator();
+
     system_bold("  Key of Game Force quit. (Ctrl+C or Ctrl+D).");
-    println!("==============================");
+
+    print_double_separator();
+
 
     // Player setup
     let cpu_member = cpu_member_input();
-    info(&format!("Confirmed: {} CPU Players Joining...", cpu_member));
+    info(&format!("  Confirmed: {} CPU Players Joining...", cpu_member));
     wait_for_dramatic_pause();
 
-    println!("------------------------------");
+    print_single_separator();
 
     let cpu_group = cpu_group_input();
-    info(&format!("CPU Difficulty Preset: {:?}.", cpu_group));
+    info(&format!("  CPU Difficulty Preset: {:?}.", cpu_group));
     wait_for_dramatic_pause();
 
-    println!("------------------------------");
+    print_single_separator();
 
     let mut players = players_setup(cpu_member, &cpu_group);
     let players_count = players.len();
     system(&format!("Players: {} members.", players_count));
     wait_for_dramatic_pause();
 
-    println!("------------------------------");
+    print_single_separator();
 
     let game_round = game_raound_input();
-    info(&format!("Confirmed: {} Rounds Session.", game_round));
+    info(&format!("  Confirmed: {} Rounds Session.", game_round));
     wait_for_dramatic_pause();
 
-    println!("------------------------------");
+    print_single_separator();
 
     system(&format!("Game round: {} Rounds Session.", game_round));
     wait_for_dramatic_pause();
 
-    println!("------------------------------");
+    print_single_separator();
 
     // Temp dice role Player.
     let temp_current = rand_range(0..players_count);
@@ -160,12 +173,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     system(&format!("Starting Dealer: {}", players[current].get_name()));
     wait_for_dramatic_pause();
 
-    println!("==============================");
+    print_double_separator();
 
     let mut round = 0;
     while round < game_round {
         system(&format!("Round start {} / {}", round+1, game_round));
-        println!("==============================");
+
+        print_double_separator();
 
         let mut field = Field::new();
 
@@ -179,12 +193,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         deal_setup(&mode, current, &mut players, &mut field);
 
-        println!("------------------------------");
+        print_single_separator();
 
         organize_my_hand_setup(&mut players, &mut field);
         wait_for_dramatic_pause();
 
-        println!("------------------------------");
+        print_single_separator();
+
         for player in &mut players {
             info(&format!("{:<6} Hand Count: {}", player.get_name(), player.hand_len()));
             wait_for_dramatic_pause();
@@ -195,8 +210,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         round = round + 1;
         current = (current + 1) % players_count;
     }
-
-    println!("");
 
     game_result(&players);
 

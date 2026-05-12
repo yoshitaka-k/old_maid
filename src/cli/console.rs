@@ -18,6 +18,21 @@ use crate::constants::{
 
 //////////////////////////////////////////////////
 
+pub fn print_single_separator() {
+    print_hr('-', 50);
+}
+
+pub fn print_double_separator() {
+    print_hr('=', 50);
+}
+
+
+pub fn print_hr(symbol: char, length: usize) {
+    println!("{}", symbol.to_string().repeat(length));
+}
+
+//////////////////////////////////////////////////
+
 /// 主にシステム向けな表示
 pub fn system(prompt: &str) {
     let style = Style::new().green();
@@ -61,14 +76,14 @@ pub fn turn_info(round: usize, turn: usize, name: &str, is_human: bool) {
 
 /// 上がりお知らせ
 pub fn clear_info(rank: usize, name: &str) {
-    println!("{}", Style::new().yellow().apply_to(&format!("{}. cleard {}.", rank, name)));
+    println!("{}", Style::new().yellow().apply_to(&format!("  {}. cleard {}.", rank, name)));
 }
 
 /// 手札情報
 pub fn player_hand_info(player: &Player) {
     let name = player.get_name();
     let hand_len = player.hand_len();
-    println!("{}", &format!("{} Hand Count: {}", name, hand_len));
+    println!("{}", &format!("  {} Hand Count: {}", name, hand_len));
     if player.has_human() {
         player.display_hand();
     }
@@ -90,7 +105,7 @@ fn rank_icon(rank: usize) -> String {
 pub fn round_result(field: &Field) {
     let ranking =  field.get_rank();
 
-    println!("============= {} =============", Style::new().yellow().apply_to("Round Result"));
+    println!("================== {} ==================", Style::new().yellow().apply_to("Round Result"));
     for (i, player) in ranking.iter().enumerate() {
         println!(
             "  {:>2} {} {:<6} (Joker hold {} turn.)",
@@ -100,7 +115,8 @@ pub fn round_result(field: &Field) {
             player.get_joker_turn()
         );
     }
-    println!("======================================");
+
+    print_hr('=', 50);
 }
 
 //////////////////////////////////////////////////

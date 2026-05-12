@@ -24,7 +24,7 @@ use crate::constants::{
 /// 起家指定
 pub fn init_current_player(temp_current: usize, players_count: usize) -> usize {
     let dice = dice_role();
-    info(&format!("Dice Result: {}", dice));
+    info(&format!("  ->Dice Result: {}", dice));
 
     (temp_current + (dice - 1)) % players_count
 }
@@ -41,8 +41,8 @@ pub fn cpu_member_input() -> usize {
 
 /// CPUの強さグループの選択
 pub fn cpu_group_input() -> CpuLevelGroup {
-    println!("CPU Strategy leve group Input.");
-    println!("1: Beginner, 2: Medium, 3: Veteran, 0: Random Selected.");
+    println!("CPU Strategy level group Input.");
+    println!("  1: Beginner, 2: Medium, 3: Veteran, 0: Random Selected.");
 
     let input = input_usize_read_line(
         &format!("CPU Strategy leve group (Default {}): ", DEFAULT_CPU_LEVEL_GROUP),
@@ -259,13 +259,14 @@ pub fn run(mode: &GameMode, round: usize, mut current: usize, players: &mut Vec<
 
     let mut turn = 0;
 
-    println!("==============================");
+    print_double_separator();
 
     'game_loop: loop {
         turn += 1;
 
         if turn > 100 {
-            println!("------------------------------");
+            print_single_separator();
+
             system("300 Turn over is Process exit.");
             system("Round is Draw end.");
 
@@ -281,7 +282,7 @@ pub fn run(mode: &GameMode, round: usize, mut current: usize, players: &mut Vec<
         if players[current].hand_len() == 0 {
             clear_info(players[current].get_rank(), players[current].get_name());
 
-            println!("------------------------------");
+            print_single_separator();
 
             current = (current + 1) % players_count;
             continue;
@@ -295,7 +296,7 @@ pub fn run(mode: &GameMode, round: usize, mut current: usize, players: &mut Vec<
                 // player clear.
                 add_rank_player(players_count, &mut players[current], field);
 
-                println!("------------------------------");
+                print_single_separator();
 
                 match mode {
                     GameMode::OldMaid => {}
@@ -323,7 +324,7 @@ pub fn run(mode: &GameMode, round: usize, mut current: usize, players: &mut Vec<
         // Pick card.
         let pick_card = players[target_player_idx].remove_hand(pick_card_idx);
         if players[current].has_human() {
-            info(&format!("pick card: {}", pick_card.get_name()));
+            info(&format!("  pick card: {}", pick_card.get_name()));
         }
         players[current].add_hand(pick_card.clone());
 
@@ -337,7 +338,7 @@ pub fn run(mode: &GameMode, round: usize, mut current: usize, players: &mut Vec<
         if !pair.is_empty() {
             field.record_discards(pair);
 
-            info(&format!("Discard a pair {}.", pick_card.get_name()));
+            info(&format!("  Discard a pair {}.", pick_card.get_name()));
 
             // player clear.
             if players[current].hand_len() == 0 {
@@ -354,6 +355,6 @@ pub fn run(mode: &GameMode, round: usize, mut current: usize, players: &mut Vec<
 
         current = (current + 1) % players_count;
 
-        println!("------------------------------");
+        print_single_separator();
     }
 }
