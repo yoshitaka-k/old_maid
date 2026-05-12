@@ -3,6 +3,7 @@ use std::time::Duration;
 use rand::prelude::SliceRandom;
 
 
+use console::Style;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 
 use crate::cli::console::*;
@@ -19,6 +20,13 @@ use crate::constants::{
     MIN_ROUND_COUNT,
     MAX_ROUND_COUNT,
     DEFAULT_ROUND_COUNT,
+    JOKER_TURN_BONUS,
+};
+
+use crate::constants::{
+    RANK_1ST_ICON,
+    RANK_2ND_ICON,
+    RANK_3RD_ICON,
 };
 
 /// 起家指定
@@ -247,6 +255,9 @@ fn add_rank_player(player_count: usize, player: &mut Player, field: &mut Field) 
 
     player.set_rank(rank + 1);
     player.update_point(player_count - rank);
+
+    player.update_history_joker_turn();
+
     field.add_rank(player.clone());
 }
 
@@ -261,11 +272,13 @@ pub fn run(mode: &GameMode, round: usize, mut current: usize, players: &mut Vec<
     'game_loop: loop {
         turn += 1;
 
-        if turn > 100 {
+        if turn > 300 {
             print_single_separator();
 
             system("300 Turn over is Process exit.");
             system("Round is Draw end.");
+
+            println!("");
 
             break 'game_loop;
         }
@@ -354,4 +367,130 @@ pub fn run(mode: &GameMode, round: usize, mut current: usize, players: &mut Vec<
 
         print_single_separator();
     }
+}
+
+/// 各ラウンドの獲得ポイント
+fn each_round_points(players: &[Player]) {
+    println!("{}", Style::new().dim().apply_to("各ラウンドの獲得ポイント"));
+
+    for player in players {
+        print!(
+            "  {:<6}: 合計 {:>2} pt ( ",
+            player.get_name(),
+            player.get_point()
+        );
+        let point = player.get_history_point();
+        let mut pt_str: String = String::new();
+        for p in point {
+            pt_str = format!("{} {:>2} pt", pt_str, p);
+        }
+        println!("{} )", pt_str.trim());
+    }
+}
+
+/// 各ラウンドのジョーカー保持ターン数
+fn each_round_joker_turns(players: &[Player]) {
+    println!("{}", Style::new().dim().apply_to("各ラウンドのジョーカー保持ターン数"));
+
+    for player in players {
+        let turns = player.get_history_joker_turn();
+        let turn_sum: usize = turns.iter().sum();
+
+        print!("  {:<6}: 合計 {:>2} turn ( ", player.get_name(), turn_sum);
+        let mut turn_str = String::new();
+        for turn in turns {
+            turn_str = format!("{} {:<2}", turn_str, turn);
+        }
+        println!("{} )", turn_str.trim());
+    }
+}
+
+/// ジョーカー保持ターン合計が最小のプレイヤーに +1（同値は全員）
+fn joker_turn_bonus_points(players: &[Player]) -> Vec<usize> {
+    if players.is_empty() {
+        return Vec::new();
+    }
+
+    let turn_sums: Vec<usize> = players
+        .iter()
+        .map(|player| player.get_history_joker_turn().iter().sum())
+        .collect();
+    let min_turn_sum = turn_sums.iter().copied().min().unwrap_or(0);
+
+    turn_sums
+        .iter()
+        .map(|sum| if *sum == min_turn_sum { JOKER_TURN_BONUS } else { 0 })
+        .collect()
+}
+
+/// ジョーカーボーナス表示
+fn joker_bonus_points(players: &[Player], bonus_points: &[usize]) {
+    println!("{}", Style::new().dim().apply_to("ジョーカーボーナス（保持ターン最小 +1）"));
+
+    for (player, bonus) in players.iter().zip(bonus_points.iter()) {
+        println!("  {:<6}: +{} pt", player.get_name(), bonus);
+    }
+}
+
+/// 総合順位
+fn total_rank(players: &[Player], bonus_points: &[usize]) {
+    println!("{}", Style::new().green().apply_to("総合順位（同点は参加順）"));
+
+    let mut order: Vec<usize> = (0..players.len()).collect();
+    order.sort_by(|&i, &j| {
+        let point_i = players[i].get_point() + bonus_points.get(i).copied().unwrap_or(0);
+        let point_j = players[j].get_point() + bonus_points.get(j).copied().unwrap_or(0);
+        point_j.cmp(&point_i).then(i.cmp(&j))
+    });
+
+    for (place, &idx) in order.iter().enumerate() {
+        let p = &players[idx];
+        let bonus = bonus_points.get(idx).copied().unwrap_or(0);
+        let total_point = p.get_point() + bonus;
+        let medal = match place {
+            0 => RANK_1ST_ICON,
+            1 => RANK_2ND_ICON,
+            2 => RANK_3RD_ICON,
+            _ => "  ",
+        };
+        println!(
+            "  {:>2} {} {:<6} — {:>2} pt (base {:>2} + bonus {:>1})",
+            place + 1,
+            medal,
+            p.get_name(),
+            total_point,
+            p.get_point(),
+            bonus
+        );
+    }
+}
+
+/// 合計リザルト（総ポイント順。同点は `players` の参加順＝先頭ほど上位）
+pub fn game_result(players: &[Player]) {
+    if players.is_empty() {
+        return;
+    }
+
+    let style_title = Style::new()
+    .yellow()
+    .bold()
+    .apply_to("Total Game Result");
+    println!("================ {} ===============", style_title);
+
+    each_round_points(players);
+
+    print_hr('-', 50);
+
+    each_round_joker_turns(players);
+
+    print_hr('-', 50);
+
+    let bonus_points = joker_turn_bonus_points(players);
+    joker_bonus_points(players, &bonus_points);
+
+    print_hr('-', 50);
+
+    total_rank(players, &bonus_points);
+
+    print_hr('=', 50);
 }

@@ -128,6 +128,7 @@ struct History {
     discard: Vec<Card>,
     rank: Vec<usize>,
     point: Vec<usize>,
+    joker_turn: Vec<usize>,
     choose_index: Vec<usize>,
     taken_index: Vec<usize>,
 }
@@ -138,6 +139,7 @@ impl History {
             discard: vec![],
             rank: vec![],
             point: vec![],
+            joker_turn: vec![],
             choose_index: vec![],
             taken_index: vec![],
         }
@@ -157,6 +159,14 @@ impl History {
 
     fn get_point(&self) -> &Vec<usize> {
         &self.point
+    }
+
+    fn add_joker_turn(&mut self, turn: usize) {
+        self.joker_turn.push(turn);
+    }
+
+    fn get_joker_turn(&self) -> &Vec<usize> {
+        &self.joker_turn
     }
 
     fn add_choose_index(&mut self, index: usize) {
@@ -301,6 +311,17 @@ impl Player {
 
     pub fn get_history_point(&self) -> &Vec<usize> {
         self.history.get_point()
+    }
+
+    /// 保持ジョーカーターン数を履歴に追加
+    pub fn update_history_joker_turn(&mut self) {
+        let turn = self.status.get_joker_turn();
+        self.history.add_joker_turn(turn);
+    }
+
+    /// 保持ジョーカーターン数の取得
+    pub fn get_history_joker_turn(&self) -> &Vec<usize> {
+        self.history.get_joker_turn()
     }
 
     /// ジョーカーを持っている（持っていた）ターン数

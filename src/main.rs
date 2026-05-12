@@ -8,7 +8,6 @@ use old_maid::cli::console::{
     info,
     system,
     system_bold,
-    game_result
 };
 use old_maid::game::{
     cpu_member_input,
@@ -20,6 +19,7 @@ use old_maid::game::{
     organize_my_hand_setup,
     init_current_player,
     run,
+    game_result,
 };
 use old_maid::utils::{capitalize, rand_range};
 use old_maid::{Field, GameMode};

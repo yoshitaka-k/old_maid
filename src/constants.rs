@@ -11,3 +11,5 @@ pub const DEFAULT_ROUND_COUNT: usize = 1;
 pub const RANK_1ST_ICON: &str = "🥇";
 pub const RANK_2ND_ICON: &str = "🥈";
 pub const RANK_3RD_ICON: &str = "🥉";
+
+pub const JOKER_TURN_BONUS: usize = 1;
