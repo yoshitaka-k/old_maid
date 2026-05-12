@@ -51,8 +51,11 @@ fn game_result(players: &[Player]) {
         return;
     }
 
-    println!("================ {} ===============", Style::new().yellow().apply_to("Total Game Result"));
-
+    let style_title = Style::new()
+        .yellow()
+        .bold()
+        .apply_to("Total Game Result");
+    println!("================ {} ===============", style_title);
     println!("{}", Style::new().dim().apply_to("各ラウンドの獲得ポイント"));
 
     for player in players {

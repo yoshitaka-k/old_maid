@@ -105,7 +105,12 @@ fn rank_icon(rank: usize) -> String {
 pub fn round_result(field: &Field) {
     let ranking =  field.get_rank();
 
-    println!("================== {} ==================", Style::new().yellow().apply_to("Round Result"));
+    let style_title = Style::new()
+        .yellow()
+        .bold()
+        .apply_to("Round Result");
+    println!("================== {} ==================", style_title);
+
     for (i, player) in ranking.iter().enumerate() {
         println!(
             "  {:>2} {} {:<6} (Joker hold {} turn.)",
