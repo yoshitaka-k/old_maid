@@ -124,6 +124,65 @@ pub fn round_result(field: &Field) {
     print_hr('=', 50);
 }
 
+/// 合計リザルト（総ポイント順。同点は `players` の参加順＝先頭ほど上位）
+pub fn game_result(players: &[Player]) {
+    if players.is_empty() {
+        return;
+    }
+
+    let style_title = Style::new()
+        .yellow()
+        .bold()
+        .apply_to("Total Game Result");
+    println!("================ {} ===============", style_title);
+    println!("{}", Style::new().dim().apply_to("各ラウンドの獲得ポイント"));
+
+    for player in players {
+        print!(
+            "  {:<6}: 合計 {:>2} pt ( ",
+            player.get_name(),
+            player.get_point()
+        );
+        let point = player.get_history_point();
+        let mut pt: String = String::new();
+        for p in point {
+            pt = format!("{} {:>2} pt", pt, p);
+        }
+        println!("{} )", pt.trim());
+    }
+
+    print_hr('-', 50);
+
+    println!("{}", Style::new().green().apply_to("総合順位（同点は参加順）"));
+
+    let mut order: Vec<usize> = (0..players.len()).collect();
+    order.sort_by(|&i, &j| {
+        players[j]
+            .get_point()
+            .cmp(&players[i].get_point())
+            .then(i.cmp(&j))
+    });
+
+    for (place, &idx) in order.iter().enumerate() {
+        let p = &players[idx];
+        let medal = match place {
+            0 => RANK_1ST_ICON,
+            1 => RANK_2ND_ICON,
+            2 => RANK_3RD_ICON,
+            _ => "  ",
+        };
+        println!(
+            "  {:>2} {} {:<6} — {:>2} pt",
+            place + 1,
+            medal,
+            p.get_name(),
+            p.get_point()
+        );
+    }
+
+    print_hr('=', 50);
+}
+
 //////////////////////////////////////////////////
 
 /// 入力処理

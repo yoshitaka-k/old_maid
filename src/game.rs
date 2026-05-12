@@ -98,7 +98,7 @@ pub fn game_raound_input() -> usize {
 }
 
 /// 山札作り
-fn deck_setup(mode: &GameMode, player: &Player, field: &mut Field) -> Deck {
+pub fn deck_setup(mode: &GameMode, player: &Player, field: &mut Field) -> Deck {
     // Deck Setting.
     let mut deck = Deck::new(mode);
 
@@ -124,13 +124,10 @@ fn deck_setup(mode: &GameMode, player: &Player, field: &mut Field) -> Deck {
 }
 
 /// 山札配り
-/// * `mode` - ババ抜き、ジジ抜き
+/// * `deck` - 山札
 /// * `current` - 起家プレイヤー
 /// * `players` - 参加プレイヤー達
-/// * `field` - ゲームフィールド情報
-pub fn deal_setup(mode: &GameMode, current: usize, players: &mut Vec<Player>, field: &mut Field) {
-    // Deck Setting.
-    let mut deck = deck_setup(mode, &players[current], field);
+pub fn deal_setup(deck: &mut Deck, current: usize, players: &mut Vec<Player>) {
     let deck_len = deck.len();
 
     // Deal the cards.

@@ -5,16 +5,17 @@ use figlet_rs::FIGlet;
 use old_maid::cli::console::{
     print_single_separator,
     print_double_separator,
-    print_hr,
     info,
     system,
-    system_bold
+    system_bold,
+    game_result
 };
 use old_maid::game::{
     cpu_member_input,
     cpu_group_input,
     players_setup,
     game_raound_input,
+    deck_setup,
     deal_setup,
     organize_my_hand_setup,
     init_current_player,
@@ -23,14 +24,6 @@ use old_maid::game::{
 use old_maid::utils::{capitalize, rand_range};
 use old_maid::{Field, GameMode};
 use old_maid::wait_for_dramatic_pause;
-
-use old_maid::Player;
-
-use old_maid::constants::{
-    RANK_1ST_ICON,
-    RANK_2ND_ICON,
-    RANK_3RD_ICON,
-};
 
 //////////////////////////////////////////////////
 
@@ -44,65 +37,6 @@ struct Args {
 }
 
 //////////////////////////////////////////////////
-
-/// 合計リザルト（総ポイント順。同点は `players` の参加順＝先頭ほど上位）
-fn game_result(players: &[Player]) {
-    if players.is_empty() {
-        return;
-    }
-
-    let style_title = Style::new()
-        .yellow()
-        .bold()
-        .apply_to("Total Game Result");
-    println!("================ {} ===============", style_title);
-    println!("{}", Style::new().dim().apply_to("各ラウンドの獲得ポイント"));
-
-    for player in players {
-        print!(
-            "  {:<6}: 合計 {:>2} pt ( ",
-            player.get_name(),
-            player.get_point()
-        );
-        let point = player.get_history_point();
-        let mut pt: String = String::new();
-        for p in point {
-            pt = format!("{} {:>2} pt", pt, p);
-        }
-        println!("{} )", pt.trim());
-    }
-
-    print_hr('-', 50);
-
-    println!("{}", Style::new().green().apply_to("総合順位（同点は参加順）"));
-
-    let mut order: Vec<usize> = (0..players.len()).collect();
-    order.sort_by(|&i, &j| {
-        players[j]
-            .get_point()
-            .cmp(&players[i].get_point())
-            .then(i.cmp(&j))
-    });
-
-    for (place, &idx) in order.iter().enumerate() {
-        let p = &players[idx];
-        let medal = match place {
-            0 => RANK_1ST_ICON,
-            1 => RANK_2ND_ICON,
-            2 => RANK_3RD_ICON,
-            _ => "  ",
-        };
-        println!(
-            "  {:>2} {} {:<6} — {:>2} pt",
-            place + 1,
-            medal,
-            p.get_name(),
-            p.get_point()
-        );
-    }
-
-    print_hr('=', 50);
-}
 
 /// メイン
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -129,7 +63,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     print_double_separator();
 
-
     // Player setup
     let cpu_member = cpu_member_input();
     info(&format!("  Confirmed: {} CPU Players Joining...", cpu_member));
@@ -145,6 +78,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut players = players_setup(cpu_member, &cpu_group);
     let players_count = players.len();
+
     system(&format!("Players: {} members.", players_count));
     wait_for_dramatic_pause();
 
@@ -178,6 +112,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     print_double_separator();
 
+    // Round game start.
     let mut round = 0;
     while round < game_round {
         system(&format!("Round start {} / {}", round+1, game_round));
@@ -194,10 +129,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
 
-        deal_setup(&mode, current, &mut players, &mut field);
+        // Deck Setting.
+        let mut deck = deck_setup(&mode, &players[current], &mut field);
+
+        // Card deal.
+        deal_setup(&mut deck, current, &mut players);
 
         print_single_separator();
 
+        // Organize my Hand card.
         organize_my_hand_setup(&mut players, &mut field);
         wait_for_dramatic_pause();
 
