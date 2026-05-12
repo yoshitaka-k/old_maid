@@ -11,11 +11,15 @@ use crate::trump::player::PlayerType;
 use crate::utils::{dice_role, rand_range};
 use crate::{Deck, Field, GameMode, Player};
 
-const MIN_CPU_COUNT: usize = 1;
-const MAX_CPU_COUNT: usize = 7;
-const DEFAULT_CPU_COUNT: usize = 3;
-
-const DEFAULT_CPU_LEVEL_GROUP: usize = 0;
+use crate::constants::{
+    MIN_CPU_COUNT,
+    MAX_CPU_COUNT,
+    DEFAULT_CPU_COUNT,
+    DEFAULT_CPU_LEVEL_GROUP,
+    MIN_ROUND_COUNT,
+    MAX_ROUND_COUNT,
+    DEFAULT_ROUND_COUNT,
+};
 
 /// 起家指定
 pub fn init_current_player(temp_current: usize, players_count: usize) -> usize {
@@ -29,7 +33,6 @@ pub fn init_current_player(temp_current: usize, players_count: usize) -> usize {
 pub fn cpu_member_input() -> usize {
     input_usize_read_line(
         &format!("CPU Player Num (Input {}-{}, Default {}): ", MIN_CPU_COUNT, MAX_CPU_COUNT, DEFAULT_CPU_COUNT),
-        &format!("The input is not a number {}-{}.", MIN_CPU_COUNT, MAX_CPU_COUNT),
         DEFAULT_CPU_COUNT,
         MIN_CPU_COUNT,
         MAX_CPU_COUNT
@@ -43,7 +46,6 @@ pub fn cpu_group_input() -> CpuLevelGroup {
 
     let input = input_usize_read_line(
         &format!("CPU Strategy leve group (Default {}): ", DEFAULT_CPU_LEVEL_GROUP),
-        &format!("The input is not a number 0-3."),
         DEFAULT_CPU_LEVEL_GROUP,
         0, 3
     );
@@ -83,6 +85,16 @@ pub fn players_setup(cpu_count: usize, cpu_group: &CpuLevelGroup) -> Vec<Player>
     }
 
     players
+}
+
+/// ラウンド数の指定
+pub fn game_raound_input() -> usize {
+    input_usize_read_line(
+        &format!("Game round setup (Input {}-{}, Default {}): ", MIN_ROUND_COUNT, MAX_ROUND_COUNT, DEFAULT_ROUND_COUNT),
+        DEFAULT_ROUND_COUNT,
+        MIN_ROUND_COUNT,
+        MAX_ROUND_COUNT
+    )
 }
 
 /// 山札作り
@@ -188,7 +200,7 @@ pub fn organize_my_hand_setup(players: &mut Vec<Player>, field: &mut Field) {
                 // player hand sort.
                 organize_hand(player);
 
-                pb.finish_with_message(format!("{} Arrange my Hand end.", player.get_name()));
+                pb.finish_with_message(format!("{:<6} Arrange my Hand end.", player.get_name()));
 
                 discards
             });
@@ -232,29 +244,38 @@ fn run_player(players: &mut Vec<Player>, current: usize, target_player_idx: usiz
     pick_card_idx
 }
 
-/// 順位決定
-fn add_rank_player(player: &mut Player, field: &mut Field) {
+/// 順位決定、ポイント加算
+fn add_rank_player(player_count: usize, player: &mut Player, field: &mut Field) {
     let rank = field.get_rank_len();
 
     player.set_rank(rank + 1);
+    player.update_point(player_count - rank);
     field.add_rank(player.clone());
 }
 
 /// ゲーム実行処理
-pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
+pub fn run(mode: &GameMode, round: usize, mut current: usize, players: &mut Vec<Player>, field: &mut Field) {
     let players_count = players.len();
 
     let mut turn = 0;
-    let mut current = 0;
 
     println!("==============================");
 
     'game_loop: loop {
         turn += 1;
+
+        if turn > 100 {
+            println!("------------------------------");
+            system("300 Turn over is Process exit.");
+            system("Round is Draw end.");
+
+            break 'game_loop;
+        }
+
         let mut target_player_idx = (current + players_count - 1) % players_count;
 
         let name = format!("{} ({})", players[current].get_name(), players[current].player_type_name());
-        turn_info(turn, &name, players[current].has_human());
+        turn_info(round, turn, &name, players[current].has_human());
 
         // Clear Player.
         if players[current].hand_len() == 0 {
@@ -272,10 +293,9 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
 
             if current == target_player_idx {
                 // player clear.
-                add_rank_player(&mut players[current], field);
+                add_rank_player(players_count, &mut players[current], field);
 
                 println!("------------------------------");
-                system("Game end.");
 
                 match mode {
                     GameMode::OldMaid => {}
@@ -284,7 +304,13 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
                     }
                 }
 
-                game_result(field);
+                println!("");
+
+                round_result(field);
+
+                system("Round end.");
+
+                println!("");
 
                 break 'game_loop;
             }
@@ -303,7 +329,7 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
 
         // player clear.
         if players[target_player_idx].hand_len() == 0 {
-            add_rank_player(&mut players[target_player_idx], field);
+            add_rank_player(players_count, &mut players[target_player_idx], field);
         }
 
         // Pair?
@@ -315,7 +341,7 @@ pub fn run(mode: &GameMode, players: &mut Vec<Player>, field: &mut Field) {
 
             // player clear.
             if players[current].hand_len() == 0 {
-                add_rank_player(&mut players[current], field);
+                add_rank_player(players_count, &mut players[current], field);
             }
         }
 

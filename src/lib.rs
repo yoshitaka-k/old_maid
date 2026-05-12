@@ -1,3 +1,5 @@
+/// ゲーム設定の定数
+pub mod constants;
 /// ターミナルに表示するもの
 pub mod cli;
 /// ゲーム進行の処理

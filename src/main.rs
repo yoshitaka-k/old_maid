@@ -7,6 +7,7 @@ use old_maid::game::{
     cpu_member_input,
     cpu_group_input,
     players_setup,
+    game_raound_input,
     deal_setup,
     organize_my_hand_setup,
     init_current_player,
@@ -15,6 +16,14 @@ use old_maid::game::{
 use old_maid::utils::{capitalize, rand_range};
 use old_maid::{Field, GameMode};
 use old_maid::wait_for_dramatic_pause;
+
+use old_maid::Player;
+
+use old_maid::constants::{
+    RANK_1ST_ICON,
+    RANK_2ND_ICON,
+    RANK_3RD_ICON,
+};
 
 //////////////////////////////////////////////////
 
@@ -28,6 +37,63 @@ struct Args {
 }
 
 //////////////////////////////////////////////////
+
+/// 合計リザルト（総ポイント順。同点は `players` の参加順＝先頭ほど上位）
+fn game_result(players: &[Player]) {
+    if players.is_empty() {
+        return;
+    }
+
+    println!("======= {} =======", Style::new().yellow().apply_to("Total Game Result"));
+
+    println!("{}", Style::new().dim().apply_to("各ラウンドの獲得ポイント"));
+
+    for player in players {
+        print!(
+            "  {:<6}: 合計 {:>2} pt ( ",
+            player.get_name(),
+            player.get_point()
+        );
+        let point = player.get_history_point();
+        let mut pt: String = String::new();
+        for p in point {
+            pt = format!("{} {:>2} pt", pt, p);
+        }
+        println!("{} )", pt.trim());
+    }
+
+    println!("------------------------------");
+
+    println!("{}", Style::new().green().apply_to("総合順位（同点は参加順）"));
+
+    let mut order: Vec<usize> = (0..players.len()).collect();
+    order.sort_by(|&i, &j| {
+        players[j]
+            .get_point()
+            .cmp(&players[i].get_point())
+            .then(i.cmp(&j))
+    });
+
+    for (place, &idx) in order.iter().enumerate() {
+        let p = &players[idx];
+        let medal = match place {
+            0 => RANK_1ST_ICON,
+            1 => RANK_2ND_ICON,
+            2 => RANK_3RD_ICON,
+            _ => "  ",
+        };
+        println!(
+            "  {:>2} {} {:<6} — {:>2} pt",
+            place + 1,
+            medal,
+            p.get_name(),
+            p.get_point()
+        );
+    }
+
+    println!("==============================");
+}
+
 /// メイン
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
@@ -68,6 +134,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("------------------------------");
 
+    let game_round = game_raound_input();
+    info(&format!("Confirmed: {} Rounds Session.", game_round));
+    wait_for_dramatic_pause();
+
+    println!("------------------------------");
+
+    system(&format!("Game round: {} Rounds Session.", game_round));
+    wait_for_dramatic_pause();
+
+    println!("------------------------------");
+
     // Temp dice role Player.
     let temp_current = rand_range(0..players_count);
     system(&format!("Pre-Roller: {}", players[temp_current].get_name()));
@@ -79,28 +156,53 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     wait_for_dramatic_pause();
 
     // Start current Player.
-    let current = init_current_player(dice_current, players_count);
+    let mut current = init_current_player(dice_current, players_count);
     system(&format!("Starting Dealer: {}", players[current].get_name()));
     wait_for_dramatic_pause();
 
-    println!("------------------------------");
+    println!("==============================");
 
-    let mut field = Field::new();
+    let mut round = 0;
+    while round < game_round {
+        system(&format!("Round start {} / {}", round+1, game_round));
+        println!("==============================");
 
-    deal_setup(&mode, current, &mut players, &mut field);
+        let mut field = Field::new();
 
-    println!("------------------------------");
+        if round > 0 {
+            for player in &mut players {
+                player.hand_clear();
+                player.status_clear();
+                field.clear();
+            }
+        }
 
-    organize_my_hand_setup(&mut players, &mut field);
-    wait_for_dramatic_pause();
+        deal_setup(&mode, current, &mut players, &mut field);
 
-    println!("------------------------------");
-    for player in &mut players {
-        info(&format!("{} Hand Count: {}", player.get_name(), player.hand_len()));
+        println!("------------------------------");
+
+        organize_my_hand_setup(&mut players, &mut field);
         wait_for_dramatic_pause();
+
+        println!("------------------------------");
+        for player in &mut players {
+            info(&format!("{:<6} Hand Count: {}", player.get_name(), player.hand_len()));
+            wait_for_dramatic_pause();
+        }
+
+        run(&mode, round + 1, current, &mut players, &mut field);
+
+        round = round + 1;
+        current = (current + 1) % players_count;
     }
 
-    run(&mode, &mut players, &mut field);
+    println!("");
+
+    game_result(&players);
+
+    system("Game end.");
+
+    println!("");
 
     Ok(())
 }

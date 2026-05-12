@@ -5,16 +5,6 @@ use crate::Player;
 struct Ranking(Vec<Player>);
 
 impl Ranking {
-    fn rank_icon(&self, rank: usize) -> String {
-        let emoji = match rank {
-            0 => "🥇".to_string(),
-            1 => "🥈".to_string(),
-            2 => "🥉".to_string(),
-            _ => format!("rank {}", rank+1),
-        };
-        emoji.to_string()
-    }
-
     fn add(&mut self, player: Player) {
         self.0.push(player);
     }
@@ -66,10 +56,6 @@ impl Field {
 
     pub fn get_rank_len(&self) -> usize {
         self.rank.len()
-    }
-
-    pub fn get_rank_icon(&self, rank: usize) -> String {
-        self.rank.rank_icon(rank)
     }
 
     pub fn set_mystery_card(&mut self, mystery_card: Option<Card>) {

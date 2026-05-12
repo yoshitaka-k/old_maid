@@ -55,7 +55,6 @@ impl Human {
                 max_index,
                 DEFAULT_CHOOSE_INDEX
             ),
-            &format!("The input is not a number {}-{}.", MIN_CHOOSE_INDEX, max_index),
             DEFAULT_CHOOSE_INDEX,
             MIN_CHOOSE_INDEX,
             max_index

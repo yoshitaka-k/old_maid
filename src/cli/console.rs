@@ -10,6 +10,12 @@ use rustyline::error::ReadlineError;
 use crate::Field;
 use crate::Player;
 
+use crate::constants::{
+    RANK_1ST_ICON,
+    RANK_2ND_ICON,
+    RANK_3RD_ICON,
+};
+
 //////////////////////////////////////////////////
 
 /// 主にシステム向けな表示
@@ -48,8 +54,9 @@ fn player_color(is_human: bool) -> Style {
 }
 
 /// ターン情報
-pub fn turn_info(turn: usize, name: &str, is_human: bool) {
-    println!("{}", player_color(is_human).apply_to(format!("Turn: {} / {}", turn, name)));
+pub fn turn_info(round: usize, turn: usize, name: &str, is_human: bool) {
+    let msg = format!("Round: {} / Turn: {} / {}", round, turn, name);
+    println!("{}", player_color(is_human).apply_to(msg));
 }
 
 /// 上がりお知らせ
@@ -69,14 +76,31 @@ pub fn player_hand_info(player: &Player) {
 
 //////////////////////////////////////////////////
 
-pub fn game_result(field: &Field) {
+fn rank_icon(rank: usize) -> String {
+    let emoji = match rank {
+        0 => RANK_1ST_ICON,
+        1 => RANK_2ND_ICON,
+        2 => RANK_3RD_ICON,
+        _ => "  ",
+    };
+    emoji.to_string()
+}
+
+///ラウンドリザルト
+pub fn round_result(field: &Field) {
     let ranking =  field.get_rank();
 
-    println!("======= {} =======", Style::new().yellow().apply_to("Round Result"));
+    println!("============= {} =============", Style::new().yellow().apply_to("Round Result"));
     for (i, player) in ranking.iter().enumerate() {
-        println!("{}. {} (Joker hold {} turn.)", field.get_rank_icon(i), player.get_name(), player.get_joker_turn());
+        println!(
+            "  {:>2} {} {:<6} (Joker hold {} turn.)",
+            i + 1,
+            rank_icon(i),
+            player.get_name(),
+            player.get_joker_turn()
+        );
     }
-    println!("==============================");
+    println!("======================================");
 }
 
 //////////////////////////////////////////////////
@@ -84,7 +108,6 @@ pub fn game_result(field: &Field) {
 /// 入力処理
 ///指定範囲内の値が入力されるまで表示
 pub fn input_usize_read_line(input_msg: &str,
-                        err_msg: &str,
                         default_num: usize,
                         min_num: usize,
                         max_num: usize) -> usize {
@@ -96,7 +119,7 @@ pub fn input_usize_read_line(input_msg: &str,
             Ok(num) if (min_num..=max_num).contains(&num) => {
                 break num;
             }
-            Ok(_) => error(err_msg),
+            Ok(_) => error(&format!("The input is not a number {}-{}.", min_num, max_num)),
             Err(_) => error("The input is not a number."),
         }
     }

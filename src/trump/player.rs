@@ -65,6 +65,10 @@ impl CardSet {
     fn has_joker(&self) -> bool {
         self.0.iter().any(Card::is_joker)
     }
+
+    fn clear(&mut self) {
+        self.0.clear();
+    }
 }
 
 //////////////////////////////////////////////////
@@ -73,6 +77,7 @@ impl CardSet {
 #[derive(Clone)]
 struct Status {
     rank: usize,
+    point: usize,
     joker_turn: usize,
 }
 
@@ -80,6 +85,7 @@ impl Status {
     fn new() -> Self {
         Self {
             rank: 0,
+            point: 0,
             joker_turn: 0,
         }
     }
@@ -92,12 +98,25 @@ impl Status {
         self.rank
     }
 
+    fn update_point(&mut self, point: usize) {
+        self.point = self.point + point
+    }
+
+    fn get_point(&self) -> usize {
+        self.point
+    }
+
     fn update_joker_turn(&mut self) {
         self.joker_turn = self.joker_turn + 1;
     }
 
     fn get_joker_turn(&self) -> usize {
         self.joker_turn
+    }
+
+    fn clear(&mut self) {
+        self.rank = 0;
+        self.joker_turn = 0;
     }
 }
 
@@ -108,6 +127,7 @@ impl Status {
 struct History {
     discard: Vec<Card>,
     rank: Vec<usize>,
+    point: Vec<usize>,
     choose_index: Vec<usize>,
     taken_index: Vec<usize>,
 }
@@ -117,6 +137,7 @@ impl History {
         Self {
             discard: vec![],
             rank: vec![],
+            point: vec![],
             choose_index: vec![],
             taken_index: vec![],
         }
@@ -124,6 +145,18 @@ impl History {
 
     fn add_rank(&mut self, rank: usize) {
         self.rank.push(rank);
+    }
+
+    fn get_rank(&self) -> &Vec<usize> {
+        &self.rank
+    }
+
+    fn add_point(&mut self, point: usize) {
+        self.point.push(point);
+    }
+
+    fn get_point(&self) -> &Vec<usize> {
+        &self.point
     }
 
     fn add_choose_index(&mut self, index: usize) {
@@ -217,6 +250,10 @@ impl Player {
         self.hand.len() == 0
     }
 
+    pub fn hand_clear(&mut self) {
+        self.hand.clear();
+    }
+
     /// 相手の手札の左から何番目取った履歴
     pub fn add_history_choose_index(&mut self, index: usize) {
         self.history.add_choose_index(index);
@@ -237,6 +274,10 @@ impl Player {
         self.history.values_by_descending_frequency()
     }
 
+    pub fn get_history_rank(&self) -> &Vec<usize> {
+        self.history.get_rank()
+    }
+
     /// 上がり順の保持、上がり順履歴に保持
     pub fn set_rank(&mut self, rank: usize) {
         self.status.set_rank(rank);
@@ -246,6 +287,20 @@ impl Player {
     /// 上がり順の取得
     pub fn get_rank(&self) -> usize {
         self.status.get_rank()
+    }
+
+    /// 順位ポイント加算、獲得したポイント保存
+    pub fn update_point(&mut self, point: usize) {
+        self.status.update_point(point);
+        self.history.add_point(point);
+    }
+
+    pub fn get_point(&self) -> usize {
+        self.status.get_point()
+    }
+
+    pub fn get_history_point(&self) -> &Vec<usize> {
+        self.history.get_point()
     }
 
     /// ジョーカーを持っている（持っていた）ターン数
@@ -258,6 +313,10 @@ impl Player {
     /// 保持ジョーカーターン数の取得
     pub fn get_joker_turn(&self) -> usize {
         self.status.get_joker_turn()
+    }
+
+    pub fn status_clear(&mut self) {
+        self.status.clear();
     }
 
     /// プレイヤーが手動？
