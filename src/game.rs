@@ -32,7 +32,7 @@ pub fn init_current_player(temp_current: usize, players_count: usize) -> usize {
 /// 何人のCPUを参加させるか入力
 pub fn cpu_member_input() -> usize {
     input_usize_read_line(
-        &format!("CPU Player Num (Input {}-{}, Default {}): ", MIN_CPU_COUNT, MAX_CPU_COUNT, DEFAULT_CPU_COUNT),
+        &format!("CPU Player Num (Input {}-{}, Default {})", MIN_CPU_COUNT, MAX_CPU_COUNT, DEFAULT_CPU_COUNT),
         DEFAULT_CPU_COUNT,
         MIN_CPU_COUNT,
         MAX_CPU_COUNT
@@ -45,7 +45,7 @@ pub fn cpu_group_input() -> CpuLevelGroup {
     println!("  1: Beginner, 2: Medium, 3: Veteran, 0: Random Selected.");
 
     let input = input_usize_read_line(
-        &format!("CPU Strategy leve group (Default {}): ", DEFAULT_CPU_LEVEL_GROUP),
+        &format!("CPU Strategy leve group (Default {})", DEFAULT_CPU_LEVEL_GROUP),
         DEFAULT_CPU_LEVEL_GROUP,
         0, 3
     );
@@ -90,7 +90,7 @@ pub fn players_setup(cpu_count: usize, cpu_group: &CpuLevelGroup) -> Vec<Player>
 /// ラウンド数の指定
 pub fn game_raound_input() -> usize {
     input_usize_read_line(
-        &format!("Game round setup (Input {}-{}, Default {}): ", MIN_ROUND_COUNT, MAX_ROUND_COUNT, DEFAULT_ROUND_COUNT),
+        &format!("Game round setup (Input {}-{}, Default {})", MIN_ROUND_COUNT, MAX_ROUND_COUNT, DEFAULT_ROUND_COUNT),
         DEFAULT_ROUND_COUNT,
         MIN_ROUND_COUNT,
         MAX_ROUND_COUNT

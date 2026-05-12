@@ -143,8 +143,11 @@ pub fn input_usize_read_line(input_msg: &str,
 
 /// 入力処理（ベース）
 fn read_line(prompt: &str) -> rustyline::Result<String> {
+    let styled_prompt = Style::new()
+        .apply_to(format!("[INPUT] {} >> ", prompt))
+        .to_string();
     let mut rl = rustyline::DefaultEditor::new()?;
-    let readline = rl.readline(&format!("{}", prompt));
+    let readline = rl.readline(&styled_prompt);
 
     match readline {
         Ok(line) => Ok(line.trim().to_string()),

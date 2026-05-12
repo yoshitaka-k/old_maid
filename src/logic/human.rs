@@ -49,7 +49,7 @@ impl Human {
 
         input_usize_read_line(
             &format!(
-                "Draw a card from {} (index from the left {}-{}, Default {}): ",
+                "Draw a card from {} (index from the left {}-{}, Default {})",
                 players[target_player_idx].get_name(),
                 MIN_CHOOSE_INDEX,
                 max_index,
