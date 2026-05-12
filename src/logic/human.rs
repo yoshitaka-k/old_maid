@@ -15,6 +15,7 @@ use crate::logic::shuffle::{
 };
 
 use crate::{Card, Player};
+use crate::utils::rand_range;
 
 const MIN_CHOOSE_INDEX: usize = 0;
 const DEFAULT_CHOOSE_INDEX: usize = 0;
@@ -46,17 +47,44 @@ impl Human {
     pub fn choose_card(players: &Vec<Player>, target_player_idx: usize) -> usize {
         let max_index = players[target_player_idx].hand_len().saturating_sub(1);
 
-        input_usize_read_line(
+        println!("");
+
+
+        println!(
+            "Draw a card from {}. Hand count {}.",
+            players[target_player_idx].get_name(),
+            players[target_player_idx].hand_len(),
+        );
+
+        println!(
+            "  Input {}-{} (Default {} Random Selected)",
+            MIN_CHOOSE_INDEX,
+            max_index + 1,
+            DEFAULT_CHOOSE_INDEX,
+        );
+
+        let mut input = input_usize_read_line(
             &format!(
-                "Draw a card from {} (index from the left {}-{}, Default {})",
-                players[target_player_idx].get_name(),
+                "index from the left {}-{}, Default {}",
                 MIN_CHOOSE_INDEX,
-                max_index,
-                DEFAULT_CHOOSE_INDEX
+                max_index + 1,
+                DEFAULT_CHOOSE_INDEX,
             ),
             DEFAULT_CHOOSE_INDEX,
             MIN_CHOOSE_INDEX,
-            max_index
-        )
+            max_index + 1
+        );
+
+        println!("");
+
+        if input == 0 {
+            if max_index > 0 {
+                input = rand_range(0..max_index);
+            }
+        } else {
+            input = input -  1;
+        }
+
+        input
     }
 }
