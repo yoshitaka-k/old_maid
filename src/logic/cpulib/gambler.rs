@@ -9,8 +9,7 @@ use crate::logic::shuffle::{
     RiffleParams,
 };
 use crate::utils::rand_range;
-use crate::Card;
-use crate::Player;
+use crate::{Card, Player};
 
 //////////////////////////////////////////////////
 

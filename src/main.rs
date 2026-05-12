@@ -22,7 +22,7 @@ use old_maid::game::{
     game_result,
 };
 use old_maid::utils::{capitalize, rand_range};
-use old_maid::{Field, GameMode};
+use old_maid::{GameMode, Field};
 use old_maid::wait_for_dramatic_pause;
 
 //////////////////////////////////////////////////

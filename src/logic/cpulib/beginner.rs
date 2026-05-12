@@ -8,8 +8,7 @@ use crate::logic::shuffle::{
     hindu_shuffle,
     HinduParams,
 };
-use crate::Card;
-use crate::Player;
+use crate::{Card, Player};
 
 //////////////////////////////////////////////////
 

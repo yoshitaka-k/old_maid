@@ -8,8 +8,7 @@ use crate::logic::shuffle::{
     DealParams,
 };
 use crate::utils::{rand_range};
-use crate::Card;
-use crate::Player;
+use crate::{Card, Player};
 
 //////////////////////////////////////////////////
 

@@ -1,5 +1,4 @@
-use crate::Card;
-use crate::Player;
+use crate::{Card, Player};
 
 /// 順位情報
 struct Ranking(Vec<Player>);

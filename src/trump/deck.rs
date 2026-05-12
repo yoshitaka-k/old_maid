@@ -1,6 +1,5 @@
 use crate::rand_range;
-use crate::GameMode;
-use crate::Card;
+use crate::{GameMode, Card};
 
 //////////////////////////////////////////////////
 

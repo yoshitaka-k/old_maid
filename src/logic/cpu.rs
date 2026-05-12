@@ -10,9 +10,7 @@ use crate::logic::cpulib::{
     veteran::VeteranStrategy,
 };
 
-use crate::Card;
-use crate::Player;
-use crate::PlayerType;
+use crate::{Card, Player, PlayerType};
 
 //////////////////////////////////////////////////
 

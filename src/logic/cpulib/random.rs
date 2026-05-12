@@ -2,8 +2,7 @@ use rand::prelude::SliceRandom;
 
 use crate::logic::cpulib::strategy::CpuStrategy;
 use crate::utils::rand_range;
-use crate::Card;
-use crate::Player;
+use crate::{Card, Player};
 
 //////////////////////////////////////////////////
 

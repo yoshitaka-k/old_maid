@@ -2,8 +2,8 @@ use std::thread;
 use std::time::Duration;
 use std::collections::HashMap;
 
-use crate::Card;
 use crate::logic::CpuLevel;
+use crate::Card;
 
 //////////////////////////////////////////////////
 

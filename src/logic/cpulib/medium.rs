@@ -11,8 +11,7 @@ use crate::logic::shuffle::{
     HinduParams,
 };
 use crate::utils::{get_center_position};
-use crate::Card;
-use crate::Player;
+use crate::{Card, Player};
 
 //////////////////////////////////////////////////
 

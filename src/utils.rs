@@ -1,5 +1,3 @@
-/// お手軽？関数群
-
 use rand::{ Rng, thread_rng };
 use rand::distributions::uniform::SampleRange;
 use rand::distributions::uniform::SampleUniform;

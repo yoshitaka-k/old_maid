@@ -14,8 +14,7 @@ use crate::logic::shuffle::{
     DealParams,
 };
 
-use crate::Card;
-use crate::Player;
+use crate::{Card, Player};
 
 const MIN_CHOOSE_INDEX: usize = 0;
 const DEFAULT_CHOOSE_INDEX: usize = 0;
