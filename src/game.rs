@@ -388,23 +388,6 @@ fn each_round_points(players: &[Player]) {
     }
 }
 
-/// 各ラウンドのジョーカー保持ターン数
-fn each_round_joker_turns(players: &[Player]) {
-    println!("{}", Style::new().dim().apply_to("各ラウンドのジョーカー保持ターン数"));
-
-    for player in players {
-        let turns = player.get_history_joker_turn();
-        let turn_sum: usize = turns.iter().sum();
-
-        print!("  {:<6}: 合計 {:>2} turn ( ", player.get_name(), turn_sum);
-        let mut turn_str = String::new();
-        for turn in turns {
-            turn_str = format!("{} {:<2}", turn_str, turn);
-        }
-        println!("{} )", turn_str.trim());
-    }
-}
-
 /// ジョーカー保持ターン合計が最小のプレイヤーに +1（同値は全員）
 fn joker_turn_bonus_points(players: &[Player]) -> Vec<usize> {
     if players.is_empty() {
@@ -426,9 +409,26 @@ fn joker_turn_bonus_points(players: &[Player]) -> Vec<usize> {
 /// ジョーカーボーナス表示
 fn joker_bonus_points(players: &[Player], bonus_points: &[usize]) {
     println!("{}", Style::new().dim().apply_to("ジョーカーボーナス（保持ターン最小 +1）"));
+    println!("{}", Style::new().dim().apply_to("各ラウンドのジョーカー保持ターン数"));
 
     for (player, bonus) in players.iter().zip(bonus_points.iter()) {
-        println!("  {:<6}: +{} pt", player.get_name(), bonus);
+        // println!("  {:<6}: +{} pt", player.get_name(), bonus);
+
+        let turns = player.get_history_joker_turn();
+        let turn_sum: usize = turns.iter().sum();
+
+        print!(
+            "  {:<6}: +{:>2} pt 合計 {:>2} tn ( ",
+            player.get_name(),
+            bonus,
+            turn_sum
+        );
+
+        let mut turn_str = String::new();
+        for turn in turns {
+            turn_str = format!("{} {:<2}", turn_str, turn);
+        }
+        println!("{} )", turn_str.trim());
     }
 }
 
@@ -478,10 +478,6 @@ pub fn game_result(players: &[Player]) {
     println!("================ {} ===============", style_title);
 
     each_round_points(players);
-
-    print_hr('-', 50);
-
-    each_round_joker_turns(players);
 
     print_hr('-', 50);
 
