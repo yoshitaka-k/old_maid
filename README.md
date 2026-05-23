@@ -9,9 +9,6 @@ Rustの勉強がてらババ抜きゲームでも作ってみようと思って�
 
 ## 起動
 ```bash
-cargo run
-```
-```bash
 cargo run -- --mode maid
 ```
 ```bash
