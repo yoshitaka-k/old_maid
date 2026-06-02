@@ -1,0 +1,34 @@
+name: Rust Windows Build
+
+on:
+  push:
+    tags:
+      - 'v*' # 「v1.0」や「v0.1.0-alpha」みたいなタグがプッシュされたら動く
+  workflow_dispatch: # GitHubの画面から手動でいつでも走らせられる
+
+jobs:
+  build-windows:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: x86_64-pc-windows-gnu
+
+    - name: Install MinGW (Cross Compiler)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-mingw-w64-x86-64
+
+    - name: Build for Windows
+      run: cargo build --release --target x86_64-pc-windows-gnu
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-binary-${{ github.ref_name }} # タグ名とかが名前に付くようにしたよ♡
+        path: target/x86_64-pc-windows-gnu/release/*.exe
